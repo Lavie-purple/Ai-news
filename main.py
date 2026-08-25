@@ -31,6 +31,21 @@ def _render(date_str):
     """基于库内当日数据完成：事件合并 -> 综述 -> 日报/周报。返回日报路径。"""
     all_items = storage.load_items(date_str)
 
+    # 「限时免费」信号（免费额度/试用等）在翻译后的中文里依然可辨：
+    # 仅把命中该规则的条目迁入 freebie，其余类目保留采集时的分类结果
+    # （采集时拥有完整原文与 tags，渲染期重分类反而会降低精度）
+    try:
+        changed = 0
+        for it in all_items:
+            if it.get("category") != "freebie" and classifier.classify(it) == "freebie":
+                it["category"] = "freebie"
+                changed += 1
+        if changed:
+            storage.save_items(all_items, date_str)
+            print(f"  规则重分类: {changed} 条迁入「限时免费」")
+    except Exception as e:
+        print(f"    [提示] 重分类跳过: {e}")
+
     # 补全 summary_final（DB 仅存了 summary 列），翻译翻译成中文标题/摘要。
     # --report-only 跳过 process()，在此补足翻译；结果同步回 summary 并落库，
     # 以免每次重建报告都重复调用翻译接口。

@@ -98,11 +98,12 @@ section.collapsed > .container > *:not(.sec-head) { display: none; }
 .card .title a { color: var(--text); }
 .card .title a:hover { color: var(--link); }
 .card p.sum { color: var(--muted); font-size: 14px; margin-top: 6px; }
-.hl { display: inline-block; margin-top: 9px; font-size: 12.5px; color: #b45309;
-      background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 3px 10px; }
-@media (prefers-color-scheme: dark) {
-  .hl { color: #fdba74; background: #2a2118; border-color: #5a3d22; }
-}
+/* 亮点面板：一句话说明模型/智能体优势（不复述下载数，避免与 meta 重复） */
+.hl-box { margin: 9px 0 2px; font-size: 13px; line-height: 1.6; color: var(--text);
+          background: var(--bg); border: 1px solid var(--border);
+          border-left: 3px solid var(--cat, var(--link));
+          border-radius: 8px; padding: 6px 12px; }
+.hl-box .hl-tag { color: var(--cat, var(--link)); font-weight: 700; margin-right: 7px; }
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px;
         font-size: 12.5px; color: var(--muted); }
 .tag { color: #fff; border-radius: 6px; padding: 1px 9px; font-size: 12px; }
@@ -274,9 +275,12 @@ def _rel_html(item):
 
 
 def _hl_html(item):
-    """卡片亮点补充说明（模型/智能体的优势点、评测超越、参数量等）。"""
-    hl = item.get("highlight")
-    return f'<div class="hl">{_esc(hl)}</div>' if hl else ""
+    """卡片亮点面板：一句话说明该模型/智能体的优势特点（不复述下载数）。"""
+    hl = (item.get("highlight") or "").strip()
+    if not hl:
+        return ""
+    return (f'<div class="hl-box"><span class="hl-tag">💡 优势</span>'
+            f'{_esc(hl)}</div>')
 
 
 def _origin_span(item):

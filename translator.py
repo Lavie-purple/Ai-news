@@ -12,6 +12,7 @@
 import json
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -115,7 +116,7 @@ _REPO_TITLE_RE = re.compile(r"^[\w.-]+/[\w.-]+$")
 
 _MAX_QUERY_LEN = 450   # MyMemory 单次查询长度上限约 500 字节
 _TRANSLATE_TIMEOUT = 10  # 单条翻译请求超时（秒）
-_TRANSLATE_BUDGET = 45    # 免费后端总耗时上限（秒），超时即放弃以免卡死
+_TRANSLATE_BUDGET = 90    # 免费后端总耗时上限（秒），超时即放弃以免卡死
 
 
 def is_mostly_english(text):
@@ -139,10 +140,36 @@ def needs_translation(item):
     return out
 
 
+_URL_RE = re.compile(r"https?://[^\s)>\]」』\"']+", re.I)
+# 易被翻译引擎误译成普通词的专业缩写（如 LLM→「法学硕士」），一并占位保护
+_ACRONYM_RE = re.compile(
+    r"\b(LLM|MLLM|VLM|AGI|A2A|MCP|RAG|SFT|RLHF|LoRA|GGUF|AG-UI|AISI|SDLC|SOTA)\b")
+
+
+def _mask_urls(text):
+    """把网页链接与专业缩写替换为占位符 ⟦N⟧，翻译后由 _unmask_urls 还原。
+    链接与专业名称保持英文原样（不被翻译引擎改坏）。"""
+    urls = []
+
+    def _sub(m):
+        urls.append(m.group(0))
+        return f"⟦{len(urls) - 1}⟧"
+
+    text = _URL_RE.sub(_sub, text)
+    text = _ACRONYM_RE.sub(_sub, text)
+    return text, urls
+
+
+def _unmask_urls(text, urls):
+    for i, u in enumerate(urls):
+        text = text.replace(f"⟦{i}⟧", u)
+    return text
+
+
 def translate_items(items, max_texts=None):
     """
     就地翻译 items 中英文标题与摘要（按热度从高到低安排翻译优先级）。
-    LLM（若配置）与免密钥后端（MyMemory/Google）互为备份：前一个不可用自动降级。
+    LLM（若配置）与免密钥后端（GDict/MyMemory/Google）互为备份：前一个不可用自动降级。
     相同原文优先走翻译缓存（落库），避免重复打限流严重的免密钥接口。
     返回实际翻译成功的条数。
     """
@@ -157,7 +184,10 @@ def translate_items(items, max_texts=None):
     if not tasks:
         return 0
 
-    texts = [t[2][:_MAX_QUERY_LEN] for t in tasks]
+    # 网页链接先掩成占位符再送翻（译后还原），链接与原文保持一致
+    masked = [_mask_urls(t[2][:_MAX_QUERY_LEN]) for t in tasks]
+    texts = [m for m, _ in masked]
+    url_maps = [u for _, u in masked]
     results = [None] * len(texts)
     pending = set(range(len(texts)))
 
@@ -172,10 +202,11 @@ def translate_items(items, max_texts=None):
         except Exception:
             cache = {}
 
-    # 2) 后端翻译：LLM（若配置）→ MyMemory → Google，互为备份
+    # 2) 后端翻译：LLM（若配置）→ GDict → MyMemory → Google，互为备份
     backends = []
     if config.LLM_API_BASE and config.LLM_API_KEY:
         backends.append(("LLM", _translate_llm))
+    backends.append(("GDict", _translate_gdict))
     backends.append(("MyMemory", _translate_mymemory))
     backends.append(("Google", _translate_google))
 
@@ -201,10 +232,12 @@ def translate_items(items, max_texts=None):
             except Exception:
                 pass
 
-    # 3) 写回条目；摘要同步到 summary_final，避免渲染时被回滚成原文
+    # 3) 写回条目；摘要同步到 summary_final，避免渲染时被回滚成原文。
+    #    写回前还原被占位符保护的网页链接。
     done = 0
-    for (it, field, original), translated in zip(tasks, results):
+    for (it, field, original), translated, urls in zip(tasks, results, url_maps):
         if translated:
+            translated = _unmask_urls(translated, urls)
             it[field] = translated
             if field == "summary":
                 it["summary_final"] = translated
@@ -303,7 +336,7 @@ _GTX_URL = "https://translate.googleapis.com/translate_a/single"
 def _google_one(text):
     resp = _http_get(
         _GTX_URL,
-        params={"client": "gtx", "sl": "en", "tl": "zh-CN", "dt": "t", "q": text},
+        params={"client": "gtx", "sl": "auto", "tl": "zh-CN", "dt": "t", "q": text},
     )
     segs = resp.json()[0] or []
     return "".join(s[0] for s in segs if s and s[0])
@@ -320,4 +353,52 @@ def _translate_google(texts, deadline=0):
         except Exception:
             results.append(None)
         time.sleep(0.12)
+    return results
+
+
+# ------------------------------------------------- Google dict-chrome-ex 通道
+# gTX（translate.googleapis.com）被限流（429）时，clients5 的词典通道通常仍可用
+_GDICT_URL = "https://clients5.google.com/translate_a/t"
+
+
+def _gdict_one(text):
+    resp = _http_get(
+        _GDICT_URL,
+        params={"client": "dict-chrome-ex", "sl": "auto", "tl": "zh-CN", "q": text},
+        headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
+    )
+    data = resp.json()
+    if isinstance(data, dict):
+        sents = data.get("sentences") or []
+        return "".join(s.get("trans", "") for s in sents).strip() or None
+    parts = []
+    for item in data or []:
+        if isinstance(item, str):
+            parts.append(item)
+        elif isinstance(item, list):
+            parts.append("".join(x for x in item if isinstance(x, str)))
+    out = "".join(parts).strip()
+    return out or None
+
+
+def _translate_gdict(texts, deadline=0):
+    """clients5 词典通道：3 线程并发（该接口对并发较宽容），
+    单条失败不影响其余；超过时间预算即取消未开始的任务。"""
+    results = [None] * len(texts)
+
+    def _work(i):
+        try:
+            return i, _gdict_one(texts[i])
+        except Exception:
+            return i, None
+
+    with ThreadPoolExecutor(max_workers=3) as ex:
+        futs = [ex.submit(_work, i) for i in range(len(texts))]
+        for f in as_completed(futs):
+            i, t = f.result()
+            results[i] = t
+            if deadline and time.time() > deadline:
+                for g in futs:
+                    g.cancel()
+                break
     return results

@@ -13,14 +13,15 @@ import config
 
 # ---------------------------------------------------------------- 分类
 def classify(item):
-    """按中英文关键词计分（叠加来源偏置），返回得分最高的分类 key；无命中时用数据源兜底。"""
+    """按中英文关键词计分（叠加来源偏置与类目权重），返回得分最高的分类 key；无命中时用数据源兜底。"""
     tags = " ".join(item.get("tags") or [])
     text = f"{item['title']} {item.get('summary', '')} {tags}".lower()
     bias = config.SOURCE_CATEGORY_BIAS.get(item["source_type"], {})
+    weight = getattr(config, "CATEGORY_WEIGHT", {})
     best_key, best_score = None, 0
     for key in config.CATEGORY_PRIORITY:
         score = sum(1 for kw in config.KEYWORDS[key] if kw.lower() in text)
-        score += bias.get(key, 0)
+        score = (score + bias.get(key, 0)) * weight.get(key, 1)
         if score > best_score:
             best_key, best_score = key, score
     if best_key:
@@ -327,99 +328,126 @@ _EN_FAST_LABEL = {
 }
 
 
-def _fmt_num(n):
-    n = int(n or 0)
-    if n >= 10000:
-        return f"{n / 10000:.0f}w"
-    if n >= 1000:
-        return f"{n / 1000:.0f}k"
-    return str(n)
+# HuggingFace 任务类型 → 面板里的中文能力解读（让优势一眼可读）。
+# 摘要可能还是英文 pipeline tag，也可能已被 localize_terms 转成中文标签，两种都收。
+_TASK_CN = {
+    "image-text-to-text": "图文多模态理解",
+    "图文到文本": "图文多模态理解",
+    "image-to-text": "图像理解",
+    "any-to-any": "全模态生成",
+    "全模态": "全模态生成",
+    "visual-document-retrieval": "视觉文档检索",
+}
 
 
-def extract_highlight(item):
-    """返回该条目的一句话亮点（带前缀 emoji），突出「为何选它 / 比现有模型强在哪」。
-    中英文信号都识别：无 LLM 也能给模型 / 智能体卡片补充「特殊点或优势点」说明。"""
+def _signal_fragments(item):
+    """按优先级收集该条目的优势信号短语（中英文均识别）。
+    覆盖：性能超越、指标提升、更快更轻、开源替代、媲美、SOTA、
+    业界首个、参数量、本地运行、开源可商用。"""
     t = f"{item.get('title', '')} {item.get('summary', '')}"
-    low = t.lower()
-    # --- 性能超越（中 / 英） ---
+    frags = []
     m = _BEAT_RE.search(t)
     if m and m.group(2).strip():
-        return f"⚡ 性能超越 {m.group(2).strip()}（领先同类）"
-    m = _EN_BEAT_RE.search(t)
-    if m:
-        tg = m.group(2).strip().rstrip(".,")
-        if tg:
-            return f"⚡ 性能超越 {tg}（领先同类）"
-    # --- 指标提升（中 / 英） ---
+        frags.append(f"性能超越 {m.group(2).strip()}（领先同类）")
+    else:
+        m = _EN_BEAT_RE.search(t)
+        if m:
+            tg = m.group(2).strip().rstrip(".,")
+            if tg:
+                frags.append(f"性能超越 {tg}（领先同类）")
     m = _IMPROVE_RE.search(t)
     if m:
-        return f"📈 {m.group(1)}{m.group(2).replace(' ', '')}"
-    m = _EN_IMPROVE_RE.search(t)
-    if m:
-        verb = m.group(1).lower()
-        pct = m.group(3).replace(" ", "")
-        metric = m.group(2).strip().lower()
-        label = _EN_IMPROVE_LABEL.get(verb, "提升")
-        cn = _METRIC_CN.get(metric, metric)
-        if cn and len(cn) <= 6:
-            return f"📉 {cn}{label} {pct}"
-        return f"📈 效果{label} {pct}"
-    # --- 比 X 更快 / 更轻（中 / 英） ---
+        frags.append(f"{m.group(1)}{m.group(2).replace(' ', '')}")
+    else:
+        m = _EN_IMPROVE_RE.search(t)
+        if m:
+            verb = m.group(1).lower()
+            pct = m.group(3).replace(" ", "")
+            metric = m.group(2).strip().lower()
+            label = _EN_IMPROVE_LABEL.get(verb, "提升")
+            cn = _METRIC_CN.get(metric, metric)
+            frags.append(f"{cn if cn and len(cn) <= 6 else '效果'}{label} {pct}")
     m = _FAST_RE.search(t)
     if m:
         tail = f" {m.group(3).replace(' ', '')}" if m.group(3) else ""
-        return f"⚡ 比 {m.group(1).strip()} {m.group(2)}{tail}"
-    m = _EN_FAST_RE.search(t)
-    if m:
-        tg = m.group(2).strip().rstrip(".,")
-        if tg:
-            return f"⚡ 比 {tg} {_EN_FAST_LABEL.get(m.group(1).lower(), '更强')}"
-    # --- 开源替代 X（英文） ---
+        frags.append(f"比 {m.group(1).strip()} {m.group(2)}{tail}")
+    else:
+        m = _EN_FAST_RE.search(t)
+        if m:
+            tg = m.group(2).strip().rstrip(".,")
+            if tg:
+                frags.append(f"比 {tg} {_EN_FAST_LABEL.get(m.group(1).lower(), '更强')}")
     m = _EN_ALT_RE.search(t)
     if m:
         tg = m.group(2).strip().rstrip(".,")
         if tg:
-            return f"🛠 开源替代 {tg}"
-    # --- 媲美（中文） ---
+            frags.append(f"开源替代 {tg}")
     m = _PACE_RE.search(t)
     if m:
-        return f"⚡ 媲美 {m.group(2).strip()}"
-    # --- SOTA / 首个（中 / 英） ---
+        frags.append(f"媲美 {m.group(2).strip()}")
     if _SOTA_RE.search(t) or _EN_SOTA_RE.search(t):
-        return "🏆 登顶 / 刷新评测纪录"
+        frags.append("刷新评测纪录")
     if _FIRST_RE.search(t) or _EN_FIRST_RE.search(t):
-        return "🌟 业界首个（或首创方向）"
-    # --- 指标对比：用下载量 / 星标做「热度领先」式对比（回答「为何选它」）---
-    # 放在参数量之前：对开源模型，「海量下载 / 高星标」比单纯参数规模更能说明优势。
-    mtex = item.get("metrics") or {}
-    dl = mtex.get("downloads") or 0
-    st = mtex.get("stars") or 0
-    if dl and dl >= 1_000_000:
-        return f"🔥 近30天下载 {_fmt_num(dl)}，开源热度领先"
-    if st and st >= 10_000:
-        return f"⭐ {_fmt_num(st)} 星标，社区关注度第一梯队"
-    if dl and dl >= 500_000:
-        return f"🔥 近30天下载 {_fmt_num(dl)}，开源人气靠前"
-    if st and st >= 1000:
-        return f"⭐ {_fmt_num(st)} 星标，社区热度高"
-    # --- 参数量 ---
+        frags.append("业界首个 / 首创方向")
     m = _PARAM_RE.search(t)
     if m:
-        return f"🔢 {m.group(1)}B 参数规模"
-    # --- 完全本地 / 隐私优先（英文项目常见卖点） ---
+        frags.append(f"{m.group(1)}B 参数")
+    m = re.search(r"任务类型:\s*([^\s·]+)", item.get("summary", ""))
+    if m:
+        cn = _TASK_CN.get(m.group(1))
+        if cn:
+            frags.append(cn)
     if _EN_LOCAL_RE.search(t):
-        return "🔒 完全本地运行，隐私优先"
+        frags.append("完全本地运行，隐私优先")
     if _OPEN_RE.search(t):
-        return "🛠 开源，可商用 / 可部署"
-    if "开源" in t or "open-source" in low or "open source" in low:
-        return "🛠 开源项目"
-    return ""
+        frags.append("开源可商用")
+    elif "开源" in t or "open-source" in t.lower() or "open source" in t.lower():
+        frags.append("开源项目")
+    return frags
+
+
+def _heat_labels(items):
+    """计算热度百分位标注 {url: 「近30天下载热度位居本榜前 1%」}。
+    只在拥有该指标的条目内部比较，且仅标注前 10%，避免夸大；
+    不输出原始下载 / 星标数——那些已在 meta 行展示，亮点里复述即重复。"""
+    def _pct(key, text):
+        vals = [(it.get("url"), (it.get("metrics") or {}).get(key) or 0)
+                for it in items]
+        vals = [(u, v) for u, v in vals if u and v > 0]
+        if len(vals) < 10:          # 样本太少不做百分位断言
+            return {}
+        srt = sorted(v for _, v in vals)
+        n = len(srt)
+        out = {}
+        for u, v in vals:
+            ratio = sum(1 for x in srt if x > v) / n
+            if ratio < 0.01:
+                out[u] = text.format(p="1%")
+            elif ratio < 0.05:
+                out[u] = text.format(p="5%")
+            elif ratio < 0.10:
+                out[u] = text.format(p="10%")
+        return out
+
+    heat = _pct("stars", "社区热度位居本榜前 {p}")
+    heat.update(_pct("downloads", "近30天下载热度位居本榜前 {p}"))
+    return heat
+
+
+def extract_highlight(item, heat=None):
+    """组合该条目的优势说明（卡片亮点面板用，一眼看懂「为何值得关注」）。
+    优先真实优势信号；没有强信号时退回热度百分位，不再复述原始下载数。"""
+    frags = _signal_fragments(item)
+    if heat:
+        frags.append(heat)
+    return "，".join(frags[:3]) if frags else ""
 
 
 def build_highlights(items):
     """为每条目计算并挂上 highlight 字段（就地修改）。"""
+    heat = _heat_labels(items)
     for it in items:
-        it["highlight"] = extract_highlight(it)
+        it["highlight"] = extract_highlight(it, heat=heat.get(it.get("url")))
     return items
 
 

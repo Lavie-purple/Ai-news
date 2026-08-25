@@ -58,6 +58,18 @@ class TestTranslator(unittest.TestCase):
         self.assertIn("图文到文本", out)
         self.assertNotIn("image-text-to-text", out)
 
+    def test_url_mask_roundtrip(self):
+        # 链接掩成占位符翻译、译后还原：URL 必须原样保留
+        raw = ("Agent harness demo. Article URL: https://news.ycombinator.com/item?id=49398152 "
+               "and repo at https://github.com/a/b, done.")
+        masked, urls = translator._mask_urls(raw)
+        self.assertEqual(len(urls), 2)
+        self.assertNotIn("https://", masked)
+        restored = translator._unmask_urls("演示 ⟦0⟧ 与 ⟦1⟧ 完成", urls)
+        self.assertIn("https://news.ycombinator.com/item?id=49398152", restored)
+        self.assertIn("https://github.com/a/b", restored)
+        self.assertNotIn("⟦", restored)
+
 
 class TestClassifier(unittest.TestCase):
     def test_extract_highlight_beats(self):
@@ -65,17 +77,35 @@ class TestClassifier(unittest.TestCase):
         self.assertIn("超越", hl)
 
     def test_extract_highlight_downloads(self):
+        # 亮点不再复述原始下载量（与 meta 行去重），无强信号时为空
         hl = classifier.extract_highlight(_item("x", "y", metrics={"downloads": 2_358_347}))
-        self.assertIn("下载", hl)
-        self.assertIn("开源热度", hl)
+        self.assertNotIn("下载", hl)
+        self.assertNotIn("236w", hl)
+        self.assertEqual(hl, "")
+
+    def test_build_highlights_heat_percentile(self):
+        # 热门条目按百分位标注热度，且不出现原始数字
+        items = [_item(f"model-{i}", "s", metrics={"downloads": 1000 + i})
+                 for i in range(40)]
+        hot = _item("hot-model", "s", metrics={"downloads": 9_999_999})
+        items.append(hot)
+        classifier.build_highlights(items)
+        self.assertIn("前 1%", hot["highlight"])
+        self.assertNotIn("999", hot["highlight"])
 
     def test_extract_highlight_param(self):
         hl = classifier.extract_highlight(_item("Qwen3.8-27B released", "a 27B parameter model"))
-        self.assertIn("参数规模", hl)
+        self.assertIn("27B 参数", hl)
 
     def test_extract_highlight_local(self):
         hl = classifier.extract_highlight(_item("x", "Runs locally with no cloud dependency"))
         self.assertIn("本地", hl)
+
+    def test_classify_freebie(self):
+        # 限时免费类：额度/token/试用 key 等短期免费服务
+        it = _item("Cohere 限时免费送 500万 token",
+                   "新用户免费领试用额度，API 限时免费开放", source_type="rss")
+        self.assertEqual(classifier.classify(it), "freebie")
 
     def test_hot_words_count(self):
         items = [_item("Qwen3.8 model A", "about Qwen3.8"),
