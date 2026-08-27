@@ -196,5 +196,39 @@ class TestAihotParse(unittest.TestCase):
         self.assertIsNone(collector._find_balanced_array("nothing here", '"k":'))
 
 
+class TestIndexCounts(unittest.TestCase):
+    """索引页应展示 DB 中真实条数（修复"条"前空白的 bug）。"""
+
+    def test_index_includes_db_counts(self):
+        import storage, os, tempfile, report as report_mod
+        # 隔离真实 DB：把 DB_PATH 指向临时文件
+        td = tempfile.mkdtemp()
+        orig_db = config.DB_PATH
+        orig_rep = config.REPORT_DIR
+        config.DB_PATH = os.path.join(td, "test.db")
+        config.REPORT_DIR = td
+        try:
+            storage.init_db()
+            # 8/24 入 2 条、8/25 入 3 条
+            items24 = [_item(f"item 24-{i}", f"desc 24-{i}") for i in range(2)]
+            storage.save_items(items24, "2026-08-24")
+            items25 = [_item(f"item 25-{i}", f"desc 25-{i}") for i in range(3)]
+            storage.save_items(items25, "2026-08-25")
+            # 写一份最小化的报告文件（write_reports 会扫描 reports/ 目录）
+            with open(os.path.join(td, "daily_2026-08-25.html"), "w", encoding="utf-8") as f:
+                f.write("<html></html>")
+            stats = {"total": 3, "by_category": {"foundation": 3}, "by_source": {}}
+            report_mod.write_reports("2026-08-25", items25, stats, db_total=5)
+            with open(os.path.join(td, "index.html"), encoding="utf-8") as f:
+                idx = f.read()
+            # 索引中应包含来自 DB 的真实条数
+            self.assertIn(">2 条<", idx, "8/24 应显示 2 条")
+            self.assertIn(">3 条<", idx, "8/25 应显示 3 条")
+            self.assertNotIn(">条</span>", idx, "不应有空数字的\"条\"")
+        finally:
+            config.DB_PATH = orig_db
+            config.REPORT_DIR = orig_rep
+
+
 if __name__ == "__main__":
     unittest.main()

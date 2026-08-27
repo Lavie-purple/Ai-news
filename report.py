@@ -699,7 +699,7 @@ def write_reports(date_str, items, stats, db_total,
                                  merged_groups=merged_groups,
                                  source_alerts=source_alerts))
 
-    # 扫描已有报告生成索引（按日期倒序）
+    # 扫描已有报告生成索引（按日期倒序），条数一律从数据库读真实值
     reports = []
     for fn in os.listdir(config.REPORT_DIR):
         if fn.startswith("daily_") and fn.endswith(".html"):
@@ -709,15 +709,16 @@ def write_reports(date_str, items, stats, db_total,
                 reports.append(d)
             except ValueError:
                 pass
-    counts = {}
-    for it in items:
-        counts[date_str] = counts.get(date_str, 0) + 1
-    dates_desc = []
-    for d in sorted(reports, reverse=True):
-        if d == date_str:
-            dates_desc.append((d, stats["total"]))
-        else:
-            dates_desc.append((d, ""))
+    try:
+        import storage
+        from_db = storage.all_daily_counts()
+    except Exception:
+        from_db = {date_str: len(items)}
+    # 当天 items 可能尚未落库，用入参实时数覆盖
+    from_db[date_str] = max(from_db.get(date_str, 0), len(items))
+    # 合并：已有报告的日期 + 库内有数据但未生成报告的日期（用倒序）
+    all_dates = sorted(set(reports) | set(from_db.keys()), reverse=True)
+    dates_desc = [(d, from_db.get(d, 0)) for d in all_dates]
     index_path = os.path.join(config.REPORT_DIR, "index.html")
     with open(index_path, "w", encoding="utf-8") as f:
         f.write(build_index_html(dates_desc))

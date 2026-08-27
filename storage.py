@@ -256,6 +256,16 @@ def daily_counts(start_date, end_date):
     return {r["date"]: r["count"] for r in rows}
 
 
+def all_daily_counts():
+    """所有已有日期的收录条数 {date: count}。供索引页/管理面板查询用。"""
+    with _conn() as conn:
+        rows = conn.execute(
+            "SELECT item_date AS date, COUNT(*) AS count FROM items "
+            "GROUP BY item_date ORDER BY date"
+        ).fetchall()
+    return {r["date"]: r["count"] for r in rows}
+
+
 def gh_weekly_gains(start_date, end_date, limit=10):
     """GitHub 周增星榜：窗口期内最大最小快照差值排序。"""
     with _conn() as conn:
