@@ -264,6 +264,41 @@ def fetch_rss(name, url, ai_only=False):
 
 
 # ---------------------------------------------------------------- AI Hot 聚合
+_AIHOT_CHUNK_RE = re.compile(
+    r'self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)')
+
+
+def _find_balanced_array(text, start_marker):
+    """从 marker 之后的第一个 [ 开始，按括号/字符串平衡找到匹配的 ]，返回子串。
+    兼容 RSC flight payload 中可能穿插的转义字符与内嵌对象/数组。"""
+    i = text.find(start_marker)
+    if i < 0:
+        return None
+    j = text.find("[", i)
+    if j < 0:
+        return None
+    depth, in_str, esc = 0, False, False
+    for k in range(j, len(text)):
+        ch = text[k]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch == "[":
+            depth += 1
+        elif ch == "]":
+            depth -= 1
+            if depth == 0:
+                return text[j:k + 1]
+    return None
+
+
 def fetch_aihot(url="https://aihot.virxact.com"):
     """
     抓取 aihot.virxact.com（AI 热点精选聚合站）。
@@ -275,11 +310,18 @@ def fetch_aihot(url="https://aihot.virxact.com"):
     except Exception as e:
         raise RuntimeError(f"页面请求失败: {e}")
 
-    chunks = re.findall(r'self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)', text)
-    if not chunks:
-        raise RuntimeError("页面结构变化：未找到 flight 数据")
-    payload = "".join(json.loads('"' + c + '"') for c in chunks)
-    arr_text = _extract_json_array(payload, '"initialItems":')
+    # 1) 主路径：合并 RSC flight chunks 后按括号平衡提取 initialItems 数组
+    chunks = _AIHOT_CHUNK_RE.findall(text)
+    arr_text = None
+    if chunks:
+        try:
+            payload = "".join(json.loads('"' + c + '"') for c in chunks)
+            arr_text = _find_balanced_array(payload, '"initialItems":')
+        except (json.JSONDecodeError, ValueError):
+            arr_text = None
+    # 2) 兜底：直接在原始 HTML 里找 initialItems（偶有页面只嵌在 <script> 里）
+    if arr_text is None:
+        arr_text = _find_balanced_array(text, '"initialItems":')
     if not arr_text:
         raise RuntimeError("页面结构变化：未找到 initialItems")
     try:

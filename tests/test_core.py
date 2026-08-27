@@ -162,5 +162,39 @@ class TestReport(unittest.TestCase):
         self.assertIn("HTTP 429", html)                # 数据源失败原因展示在页脚
 
 
+class TestAihotParse(unittest.TestCase):
+    """AI Hot 站 RSC flight 解析回归测试。"""
+
+    SAMPLE = ('<html>self.__next_f.push([1,"H4sIAAAAAAAAA"])</html>'
+              '"initialItems":[{"id":"x","url":"https://example.com/a",'
+              '"titleZh":"标题A","summaryZh":"摘要A","finalScore":90,'
+              '"source":{"name":"Hacker News"},'
+              '"publishedAt":"2026-08-27T01:00:00Z","aiTags":[{"tag":"LLM"}]},'
+              '{"id":"y","url":"https://example.com/b","titleZh":"标题B"}]')
+
+    def test_find_balanced_array(self):
+        import collector
+        arr = collector._find_balanced_array(self.SAMPLE, '"initialItems":')
+        self.assertIsNotNone(arr)
+        self.assertTrue(arr.startswith("["))
+        self.assertTrue(arr.endswith("]"))
+        import json
+        data = json.loads(arr)
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0]["titleZh"], "标题A")
+        self.assertEqual(data[1]["url"], "https://example.com/b")
+
+    def test_find_balanced_array_nested(self):
+        # 数组里嵌套数组/对象，验证平衡（避免用含未转义 ] 的字符串）
+        import collector
+        sample = '"k":[1,2,[3,4],{"x":"y"},6]'
+        self.assertEqual(collector._find_balanced_array(sample, '"k":'),
+                         '[1,2,[3,4],{"x":"y"},6]')
+
+    def test_find_balanced_array_missing(self):
+        import collector
+        self.assertIsNone(collector._find_balanced_array("nothing here", '"k":'))
+
+
 if __name__ == "__main__":
     unittest.main()
