@@ -46,8 +46,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/ reports/
+          # 1) 本次如有变更，先提交
           git diff --cached --quiet || git commit -m "📰 每日报告 $(date -u +%F)"
-          git pull --rebase origin main
+          # 2) 拉取云端新提交（手工推送过代码时会有发散）。
+          #    关键：db 与 reports/ 是本次工作流生成的结果，应以本地（ours）为胜，
+          #    否则 rebase 合并这两个二进制/生成文件会失败。
+          git fetch origin main
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            # --strategy-option=ours 让本次生成的文件永远覆盖云端版本
+            git rebase --strategy-option=ours origin/main || {
+              echo "::error::git rebase 失败，请保留日志排查"
+              exit 1
+            }
+          fi
           git push
 
       - name: 上传 Pages 产物
