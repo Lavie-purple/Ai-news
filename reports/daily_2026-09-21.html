@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>">
+<title>AI 每日精选 · 2026-09-21</title>
+<style>
+:root {
+  --bg: #f3f5f9; --card: #ffffff; --text: #1f2937; --muted: #6b7280;
+  --border: #e5e7eb; --link: #1d4ed8; --chip-bg: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1420; --card: #171e2e; --text: #e5e7eb; --muted: #9ca3af;
+    --border: #2a3447; --link: #8ab4ff; --chip-bg: #171e2e;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  line-height: 1.65; padding-bottom: 60px;
+}
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { max-width: 1000px; margin: 0 auto; padding: 0 22px; }
+
+/* ---------- 头部 ---------- */
+.hero {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #db2777 120%);
+  color: #fff; padding: 44px 0 36px; margin-bottom: 18px;
+}
+.hero h1 { font-size: 30px; letter-spacing: .5px; }
+.hero .sub { opacity: .92; margin-top: 6px; font-size: 15px; }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.stat-chip {
+  background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25);
+  border-radius: 10px; padding: 8px 16px; backdrop-filter: blur(4px);
+}
+.stat-chip b { font-size: 19px; margin-right: 6px; }
+.stat-chip span { font-size: 13px; opacity: .9; }
+
+/* ---------- 分类导航 ---------- */
+nav.cats {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg); padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+/* 分类 chip 行与筛选工具条各占一行（避免工具条遮挡分类 chip）；
+   工具条整体靠右，窄屏自动换行 */
+.chips { display: flex; flex-wrap: nowrap; gap: 7px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 4px; }
+.chips.wrap { flex-wrap: wrap; overflow: visible; }   /* 今日热词：换行完整显示，不被裁切 */
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--chip-bg); border: 1px solid var(--border);
+  border-radius: 999px; padding: 5px 12px; font-size: 13px; color: var(--text);
+  white-space: nowrap; flex-shrink: 0;
+}
+.chip:hover { text-decoration: none; border-color: #6366f1; }
+.chip .n { color: var(--muted); font-size: 12px; }
+.chip.kw { cursor: pointer; }
+.chip.kw:hover { border-color: #6366f1; color: #6366f1; }
+.chip.kw.active { background: #6366f1; border-color: #6366f1; color: #fff; }
+.chip.kw.active .n { color: #fff; }
+
+/* ---------- 板块 ---------- */
+section { margin-top: 34px; scroll-margin-top: 130px; }
+.sec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; cursor: pointer; user-select: none; }
+.sec-head h2 { font-size: 21px; transition: color .15s ease; }
+.sec-head:hover h2 { color: var(--link); }
+.sec-head .toggle { font-size: 13px; color: var(--muted); transition: transform .15s ease; flex: none; }
+section.collapsed .sec-head .toggle { transform: rotate(-90deg); }
+section.collapsed .sec-head { margin-bottom: 0; }
+section.collapsed > .container > *:not(.sec-head) { display: none; }
+.sec-badge {
+  font-size: 12.5px; color: #fff; border-radius: 999px; padding: 2px 11px;
+}
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 18px; margin-bottom: 10px; transition: box-shadow .15s ease, transform .15s ease;
+}
+.card:hover { box-shadow: 0 6px 22px rgba(30,41,59,.12); transform: translateY(-1px); }
+/* 超出封顶、默认隐藏的卡片：点「加载更多」移除 .beyond 后展开 */
+.card.beyond { display: none; }
+.more-btn {
+  display: block; margin: 6px auto 14px; padding: 8px 18px; cursor: pointer;
+  font-size: 13.5px; color: var(--link); background: var(--chip-bg);
+  border: 1px solid var(--border); border-radius: 20px;
+}
+.more-btn:hover { border-color: var(--link); }
+.card .title { font-size: 16.5px; font-weight: 600; }
+.card .title a { color: var(--text); }
+.card .title a:hover { color: var(--link); }
+.card p.sum { color: var(--muted); font-size: 14px; margin-top: 6px; }
+/* 亮点面板：一句话说明模型/智能体优势（不复述下载数，避免与 meta 重复） */
+.hl-box { margin: 9px 0 2px; font-size: 13px; line-height: 1.6; color: var(--text);
+          background: var(--bg); border: 1px solid var(--border);
+          border-left: 3px solid var(--cat, var(--link));
+          border-radius: 8px; padding: 6px 12px; }
+.hl-box .hl-tag { color: var(--cat, var(--link)); font-weight: 700; margin-right: 7px; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px;
+        font-size: 12.5px; color: var(--muted); }
+.tag { color: #fff; border-radius: 6px; padding: 1px 9px; font-size: 12px; }
+.score-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+.bar { width: 64px; height: 5px; border-radius: 99px; background: var(--border); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 99px;
+         background: linear-gradient(90deg,#f97316,#ef4444); }
+.score-num { color: #ef4444; font-weight: 700; }
+
+/* ---------- 精选区 ---------- */
+.top-item { display: flex; gap: 16px; }
+.rank {
+  flex: none; width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 17px; color: #fff;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+.rank.r2 { background: linear-gradient(135deg, #64748b, #94a3b8); }
+.rank.r3 { background: linear-gradient(135deg, #b45309, #d97706); }
+
+.note { color: var(--muted); font-size: 12.5px; margin: 4px 0 10px 2px; }
+footer { margin-top: 48px; text-align: center; color: var(--muted); font-size: 12.5px; }
+footer hr { border: none; border-top: 1px solid var(--border); margin-bottom: 14px; }
+
+/* ---------- 报告索引页 ---------- */
+.index-card { background: var(--card); border: 1px solid var(--border);
+              border-radius: 12px; padding: 14px 20px; margin-bottom: 10px;
+              display: flex; justify-content: space-between; align-items: center; }
+
+/* ---------- 今日综述 / 热词 ---------- */
+.brief-card { border-left: 4px solid #7c3aed; }
+.brief-card p.body { margin-top: 10px; font-size: 14.5px; }
+
+/* ---------- 相关报道折叠块 ---------- */
+details.rel { margin-top: 8px; font-size: 13px; color: var(--muted); }
+details.rel summary { cursor: pointer; user-select: none; }
+details.rel ul { margin: 6px 0 2px 18px; }
+details.rel li { margin-bottom: 4px; list-style: disc; }
+
+.meta .gain { color: #f59e0b; font-weight: 600; }
+.srclink { color: var(--muted); text-decoration: none; }
+.srclink:hover { color: var(--link); text-decoration: underline; }
+
+/* ---------- 工具栏：信源下拉筛选 / 关键词搜索 ---------- */
+.toolbar { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 10px; padding: 8px 0 4px; flex: 0 0 100%; }
+.sel, .qbox { flex: none; border: 1px solid var(--border); border-radius: 10px;
+        background: var(--chip-bg); color: var(--text); padding: 6px 10px; font-size: 13px;
+        font-family: inherit; outline: none; max-width: 240px; }
+.qbox { width: 224px; flex: 1 1 224px; }
+.sel:focus, .qbox:focus { border-color: #6366f1; }
+#match-cnt { color: var(--muted); font-size: 12.5px; flex: none; }
+
+/* ---------- 周报 ---------- */
+.bars { display: flex; align-items: flex-end; gap: 10px; height: 130px;
+        padding: 10px 4px 0; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center;
+           gap: 6px; height: 100%; justify-content: flex-end; }
+.bar-col i { display: block; width: 70%; max-width: 46px;
+             background: linear-gradient(180deg,#6366f1,#8b5cf6);
+             border-radius: 6px 6px 0 0; }
+.bar-col .lbl { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.bar-col b { font-size: 12px; }
+.wrow { display: flex; align-items: center; gap: 12px; padding: 9px 4px;
+        border-bottom: 1px solid var(--border); font-size: 14px; }
+.wrow:last-child { border-bottom: none; }
+.wrow .rk { width: 26px; text-align: center; font-weight: 700;
+            color: var(--muted); flex: none; }
+.wrow .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+           white-space: nowrap; }
+.wrow .sc { flex: none; color: #ef4444; font-weight: 700; font-size: 13px; }
+
+/* ---------- 美化 1：卡片分类色条 + 悬浮高亮 ---------- */
+.card { position: relative; overflow: hidden; }
+.card::before {
+  content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 4px;
+  border-radius: 0 4px 4px 0; background: var(--cat, var(--border)); opacity: .8;
+  transition: opacity .15s ease, box-shadow .15s ease;
+}
+.card:hover { border-color: var(--cat, var(--border)); }
+.card:hover::before { opacity: 1; box-shadow: 0 0 10px var(--cat, var(--border)); }
+
+/* ---------- 美化 6：渐变标题 ---------- */
+.hero h1 {
+  background: linear-gradient(90deg, #ffffff 0%, #dbeafe 52%, #fbcfe8 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ---------- 美化 5：空状态 ---------- */
+#no-res {
+  margin: 26px auto; max-width: 540px;
+  background: var(--card); border: 1px dashed var(--border); border-radius: 14px;
+}
+
+/* ---------- 美化 4：热词词云悬浮 ---------- */
+.chip.kw:hover { transform: translateY(-1px); }
+.chip.kw:focus-visible { outline-offset: 3px; }
+
+/* ---------- 美化 7：响应式 + 无障碍 ---------- */
+:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; border-radius: 6px; }
+@media (max-width: 640px) {
+  .hero { padding: 30px 0 24px; }
+  .hero h1 { font-size: 22px; }
+  .card { padding: 12px 14px; }
+  .sec-head h2 { font-size: 18px; }
+  .toolbar { gap: 6px 8px; }
+  .sel { flex: 1 1 auto; }
+  .qbox { width: 100%; flex: 1 1 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+  <div class="hero"><div class="container">
+    <h1>🛰️ AI 项目情报站 · 每日精选</h1>
+    <div class="sub">2026-09-21 星期一 ｜ 自动抓取国内外大模型与 AI 项目动态</div>
+    <div class="stats">
+      <div class="stat-chip"><b>99</b><span>今日收录</span></div>
+      <div class="stat-chip"><b>7</b><span>涉及分类</span></div>
+      <div class="stat-chip"><b>9</b><span>数据源</span></div>
+      <div class="stat-chip"><b>8</b><span>今日精选</span></div>
+      <div class="stat-chip"><b>1</b><span>合并重复事件</span></div>
+    </div>
+  </div></div><nav class="cats"><div class="container"><div class="chips wrap"><a class="chip" href="#cat-foundation" data-cat="foundation" data-total="20">🧠 大模型发布 <span class="n">20</span></a><a class="chip" href="#cat-multimodal" data-cat="multimodal" data-total="3">🎨 多模态生成 <span class="n">3</span></a><a class="chip" href="#cat-agents" data-cat="agents" data-total="6">🤖 智能体与应用 <span class="n">6</span></a><a class="chip" href="#cat-opensource" data-cat="opensource" data-total="19">🛠️ 开源项目与工具 <span class="n">19</span></a><a class="chip" href="#cat-industry" data-cat="industry" data-total="24">📈 行业动态 <span class="n">24</span></a><a class="chip" href="#cat-research" data-cat="research" data-total="26">🔬 研究前沿 <span class="n">26</span></a><a class="chip" href="#cat-policy" data-cat="policy" data-total="1">⚖️ 政策与安全 <span class="n">1</span></a></div>
+<div class="toolbar">
+  <select id="srcsel" class="sel" title="按信源筛选"><option value="">📡 全部信源</option><option value="arXiv">arXiv（40）</option><option value="IT之家">IT之家（15）</option><option value="GitHub">GitHub（11）</option><option value="量子位">量子位（9）</option><option value="HuggingFace">HuggingFace（8）</option><option value="TechCrunch AI">TechCrunch AI（5）</option><option value="Hacker News (高赞 AI)">Hacker News (高赞 AI)（5）</option><option value="爱范儿">爱范儿（3）</option><option value="The Verge AI">The Verge AI（3）</option></select>
+  <input id="q" class="qbox" type="search" placeholder="🔍 搜索标题 / 摘要">
+  <span id="match-cnt"></span>
+</div></div></nav>
+  <section id="hotwords"><div class="container">
+    <div class="sec-head"><span class="toggle">▾</span><h2>🔥 今日热词</h2><div class="sec-line"></div></div>
+    <div class="chips wrap"><span class="chip kw" data-kw="Qwen-Image-2.1" tabindex="0" role="button" aria-label="筛选包含 Qwen-Image-2.1 的条目" title="点击筛选包含「Qwen-Image-2.1」的条目">Qwen-Image-2.1 <span class="n">×3</span></span><span class="chip kw" data-kw="华为" tabindex="0" role="button" aria-label="筛选包含 华为 的条目" title="点击筛选包含「华为」的条目">华为 <span class="n">×3</span></span></div>
+  </div></section><section id="top" data-sec><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🔥 今日精选 TOP8</h2><div class="sec-line"></div></div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="HuggingFace" data-text="cactus-compute/needle3 任务类型: 文本生成 · 近30天下载 36,096 · 👍 138zh-cnzh-cn">
+        <div class="top-item">
+          <div class="rank">1</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://huggingface.co/Cactus-Compute/needle3" target="_blank" rel="noopener">Cactus-Compute/needle3</a></div>
+            <p class="sum">任务类型: 文本生成</p>
+            
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://huggingface.co/Cactus-Compute/needle3" target="_blank" rel="noopener">📡 HuggingFace</a>
+              
+              <span>⬇ 3.6w 近30天 · 👍 138</span>
+              <span class="score-wrap"><span class="bar"><i style="width:70%"></i></span><span class="score-num">70</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="HuggingFace" data-text="qwen/qwen-image-2.1 任务类型: 文生图 · 近30天下载 183 · 👍 887zh-cnzh-cn">
+        <div class="top-item">
+          <div class="rank r2">2</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://huggingface.co/Qwen/Qwen-Image-2.1" target="_blank" rel="noopener">Qwen/Qwen-Image-2.1</a></div>
+            <p class="sum">任务类型: 文生图</p>
+            
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://huggingface.co/Qwen/Qwen-Image-2.1" target="_blank" rel="noopener">📡 HuggingFace</a>
+              
+              <span>⬇ 183 近30天 · 👍 887</span>
+              <span class="score-wrap"><span class="bar"><i style="width:59%"></i></span><span class="score-num">59</span></span>
+            </div>
+            <details class="rel"><summary>📎 相关报道（1）</summary><ul><li><a href="https://huggingface.co/Comfy-Org/Qwen-Image-2.1" target="_blank" rel="noopener">Comfy-Org/Qwen-Image-2.1</a> <span>— HuggingFace</span></li></ul></details>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="HuggingFace" data-text="accio-lab/occamy-1.0 任务类型: 图文到文本 · 近30天下载 1,659 · 👍 161zh-cnzh-cn">
+        <div class="top-item">
+          <div class="rank r3">3</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://huggingface.co/Accio-Lab/occamy-1.0" target="_blank" rel="noopener">Accio-Lab/occamy-1.0</a></div>
+            <p class="sum">任务类型: 图文到文本</p>
+            <div class="hl-box"><span class="hl-tag">💡 优势</span>图文多模态理解</div>
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://huggingface.co/Accio-Lab/occamy-1.0" target="_blank" rel="noopener">📡 HuggingFace</a>
+              
+              <span>⬇ 1.7k 近30天 · 👍 161</span>
+              <span class="score-wrap"><span class="bar"><i style="width:59%"></i></span><span class="score-num">59</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#f59e0b" data-cat="multimodal" data-src="HuggingFace" data-text="netease-youdao/confucius4-r2t2 任务类型: 自动语音识别 · 近30天下载 643 · 👍 169zh-cnzh-cn">
+        <div class="top-item">
+          <div class="rank r3">4</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://huggingface.co/netease-youdao/Confucius4-R2T2" target="_blank" rel="noopener">netease-youdao/Confucius4-R2T2</a></div>
+            <p class="sum">任务类型: 自动语音识别</p>
+            
+            <div class="meta">
+              <span class="tag" style="background:#f59e0b">🎨 多模态生成</span>
+              <a class="srclink" href="https://huggingface.co/netease-youdao/Confucius4-R2T2" target="_blank" rel="noopener">📡 HuggingFace</a>
+              
+              <span>⬇ 643 近30天 · 👍 169</span>
+              <span class="score-wrap"><span class="bar"><i style="width:57%"></i></span><span class="score-num">57</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="HuggingFace" data-text="comfy-org/qwen-image-2.1 近30天下载 120 · 👍 305">
+        <div class="top-item">
+          <div class="rank r3">5</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://huggingface.co/Comfy-Org/Qwen-Image-2.1" target="_blank" rel="noopener">Comfy-Org/Qwen-Image-2.1</a></div>
+            
+            
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://huggingface.co/Comfy-Org/Qwen-Image-2.1" target="_blank" rel="noopener">📡 HuggingFace</a>
+              
+              <span>⬇ 120 近30天 · 👍 305</span>
+              <span class="score-wrap"><span class="bar"><i style="width:56%"></i></span><span class="score-num">56</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="GitHub" data-text="ethanplusai/astra-flash-orchestrator astra 计划和审查； deepseek flash 构建。具有分阶段任务、验证、安全安装和可逆设置的原生 codex 工作流程。enzh-cn">
+        <div class="top-item">
+          <div class="rank r3">6</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://github.com/ethanplusai/astra-flash-orchestrator" target="_blank" rel="noopener">ethanplusai/astra-flash-orchestrator</a></div>
+            <p class="sum">Astra 计划和审查； DeepSeek Flash 构建。具有分阶段任务、验证、安全安装和可逆设置的原生 Codex 工作流程。enzh-CN</p>
+            <div class="hl-box"><span class="hl-tag">💡 优势</span>社区热度位居本榜前 1%</div>
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://github.com/ethanplusai/astra-flash-orchestrator" target="_blank" rel="noopener">📡 GitHub</a>
+              
+              <span>⭐ 264</span>
+              <span class="score-wrap"><span class="bar"><i style="width:46%"></i></span><span class="score-num">46</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="GitHub" data-text="valentynkit/awesome-jev-typesafe 使用 typesafe 的 jev（第一个 system one 模型）进行打字决策en">
+        <div class="top-item">
+          <div class="rank r3">7</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://github.com/valentynkit/awesome-jev-typesafe" target="_blank" rel="noopener">valentynkit/awesome-jev-typesafe</a></div>
+            <p class="sum">使用 TypeSafe 的 Jev（第一个 System One 模型）进行打字决策en</p>
+            
+            <div class="meta">
+              <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+              <a class="srclink" href="https://github.com/valentynkit/awesome-jev-typesafe" target="_blank" rel="noopener">📡 GitHub</a>
+              
+              <span>⭐ 111</span>
+              <span class="score-wrap"><span class="bar"><i style="width:46%"></i></span><span class="score-num">46</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="GitHub" data-text="kraayenjon/awesome-jev jev 用例、项目、sdk 和资源的精选列表。 jev 是 typesafe ai 的 system one 模型，用于在软件中进行快速、类型化的决策——具有校准概率的选择、得分和 noul。en">
+        <div class="top-item">
+          <div class="rank r3">8</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://github.com/kraayenjon/awesome-jev" target="_blank" rel="noopener">kraayenjon/awesome-jev</a></div>
+            <p class="sum">Jev 用例、项目、SDK 和资源的精选列表。 Jev 是 TypeSafe AI 的 System One 模型，用于在软件中进行快速、类型化的决策——具有校准概率的选择、得分和 Noul。en</p>
+            
+            <div class="meta">
+              <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+              <a class="srclink" href="https://github.com/kraayenjon/awesome-jev" target="_blank" rel="noopener">📡 GitHub</a>
+              
+              <span>⭐ 70</span>
+              <span class="score-wrap"><span class="bar"><i style="width:44%"></i></span><span class="score-num">44</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div></div></section><section id="cat-foundation" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🧠 大模型发布</h2><span class="sec-badge" style="background:#6366f1" data-cat="foundation" data-total="15">15</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="GitHub" data-text="dicklesworthstone/skillranker rust cli 由 typesafe.ai 的 jev 提供支持，使用实时会话上下文对下一步的代理技能进行排名。包括 claude code hooks、结构化 json、弃权和本地反馈。需要 typesafe api 密钥。enzh-cn">
+      <div class="title">🔗 <a href="https://github.com/Dicklesworthstone/skillranker" target="_blank" rel="noopener">Dicklesworthstone/skillranker</a></div>
+      <p class="sum">Rust CLI 由 TypeSafe.ai 的 Jev 提供支持，使用实时会话上下文对下一步的代理技能进行排名。包括 Claude Code hooks、结构化 JSON、弃权和本地反馈。需要 TypeSafe API 密钥。enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://github.com/Dicklesworthstone/skillranker" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 09-17 06:58</span>
+        <span>⭐ 100</span>
+        <span class="score-wrap"><span class="bar"><i style="width:42%"></i></span><span class="score-num">42</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="GitHub" data-text="miaowunya/rikkahub-sillytavern-android rikkahub plus——sillytavern android 安卓酒馆客户端  原生重写，无需 termux/node.js。角色卡、世界书 lorebook、预设、正则、快速回复 qr、美化主题一键导入，按酒馆官方语义无损兼容；提示词前缀缓存省 token、语义记忆 rag、三层记忆、quickjs 插件、微信 qq bot、豆包 tts 语音通话zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://github.com/MiaoWuNYA/rikkahub-sillytavern-android" target="_blank" rel="noopener">MiaoWuNYA/rikkahub-sillytavern-android</a></div>
+      <p class="sum">Rikkahub Plus——SillyTavern Android 安卓酒馆客户端  原生重写，无需 Termux/Node.js。角色卡、世界书 Lorebook、预设、正则、快速回复 QR、美化主题一键导入，按酒馆官方语义无损兼容；提示词前缀缓存省 token、语义记忆 RAG、三层记忆、QuickJS 插件、微信 QQ Bot、豆包 TTS 语音通话zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://github.com/MiaoWuNYA/rikkahub-sillytavern-android" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 09-20 03:25</span>
+        <span>⭐ 17</span>
+        <span class="score-wrap"><span class="bar"><i style="width:38%"></i></span><span class="score-num">38</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="HuggingFace" data-text="directedbykobyperez/qwen-image-2.1-create space 在线应用（可直接体验） · 👍 43">
+      <div class="title">🔗 <a href="https://huggingface.co/spaces/directedbykobyperez/Qwen-Image-2.1-Create" target="_blank" rel="noopener">directedbykobyperez/Qwen-Image-2.1-Create</a></div>
+      <p class="sum">Space 在线应用（可直接体验） · 👍 43</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://huggingface.co/spaces/directedbykobyperez/Qwen-Image-2.1-Create" target="_blank" rel="noopener">📡 HuggingFace</a>
+        
+        <span>🕐 09-18 12:28</span>
+        <span>👍 43</span>
+        <span class="score-wrap"><span class="bar"><i style="width:35%"></i></span><span class="score-num">35</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="IT之家" data-text="4 年 3 换：沃尔沃确认换帅，斯柯达 ceo 克劳斯 · 泽尔默将接任 it之家 9 月 21 日消息，沃尔沃汽车董事会现已将克劳斯 · 泽尔默（klaus zellmer）任命为公司总裁兼首席执行官。 他最晚将在 2027 年 10 月 1 日上任 ，现任 ceo 汉肯 · 塞缪尔森（hakan samuelsson）将与董事会共同确保交接工作顺利进行。 据沃尔沃介绍，克劳斯 · 泽尔默是一位经验丰富的汽车行业高管，在汽车行业拥有超 30 年从业经验， 最近的职位是斯柯达汽车管理委员会主席兼 ceo 。在他的领导下，斯柯达已成为欧洲销量最高的汽车品牌之一，并在 2025 年创下销量与财务双增长新纪录。 克劳斯 · 泽尔默曾担任过大众乘用车管理委员会成员，负责市场营销、销售和售后业务。加入大众乘用车之前，他曾在保时捷工作超 20 年，担任过多个高级管理职务，包括保时捷德国 ceo 和保时捷北美 ceo。 it之家注意到，沃尔沃自 2022 年以来已经更换 3zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/045.htm" target="_blank" rel="noopener">4 年 3 换：沃尔沃确认换帅，斯柯达 CEO 克劳斯 · 泽尔默将接任</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，沃尔沃汽车董事会现已将克劳斯 · 泽尔默（Klaus Zellmer）任命为公司总裁兼首席执行官。 他最晚将在 2027 年 10 月 1 日上任 ，现任 CEO 汉肯 · 塞缪尔森（Hakan Samuelsson）将与董事会共同确保交接工作顺利进行。 据沃尔沃介绍，克劳斯 · 泽尔默是一位经验丰富的汽车行业高管，在汽车行业拥有超 30 年从业经验， 最近的职位是斯柯达汽车管理委员会主席兼 CEO 。在他的领导下，斯柯达已成为欧洲销量最高的汽车品牌之一，并在 2025 年创下销量与财务双增长新纪录。 克劳斯 · 泽尔默曾担任过大众乘用车管理委员会成员，负责市场营销、销售和售后业务。加入大众乘用车之前，他曾在保时捷工作超 20 年，担任过多个高级管理职务，包括保时捷德国 CEO 和保时捷北美 CEO。 IT之家注意到，沃尔沃自 2022 年以来已经更换 3zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/045.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 00:58</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="IT之家" data-text="我国首款藏语多语言全模态 ai 输入法发布，覆盖手机、电脑等全终端 it之家 9 月 21 日消息，据科技日报昨晚报道，9 月 20 日，在青海师范大学教师教育高质量发展暨建校 70 周年大会科研成果展示环节， 我国首款藏语多语言全模态 ai 输入法 —— 智达 ai 输入法及配套藏文字体集正式发布 。 据介绍，这是中国首款藏语多语言全模态 ai 输入法。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/027.htm" target="_blank" rel="noopener">我国首款藏语多语言全模态 AI 输入法发布，覆盖手机、电脑等全终端</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，据科技日报昨晚报道，9 月 20 日，在青海师范大学教师教育高质量发展暨建校 70 周年大会科研成果展示环节， 我国首款藏语多语言全模态 AI 输入法 —— 智达 AI 输入法及配套藏文字体集正式发布 。 据介绍，这是中国首款藏语多语言全模态 AI 输入法。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/027.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-20 23:50</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="IT之家" data-text="vals ai 使用《我的世界》评测 open gpt‑6 astra 模型：显示 ai 遇重大变故可能陷入行为僵局 it之家 9 月 21 日消息，ai 评测机构 vals ai 利用游戏《我的世界（minecraft）》对 openai 最新大模型 gpt‑6 astra 开展长时自主游戏测试，全程在 twitch 直播，总测试时长达到 141 小时。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/026.htm" target="_blank" rel="noopener">Vals AI 使用《我的世界》评测 Open GPT‑6 Astra 模型：显示 AI 遇重大变故可能陷入行为僵局</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，AI 评测机构 Vals AI 利用游戏《我的世界（Minecraft）》对 OpenAI 最新大模型 GPT‑6 Astra 开展长时自主游戏测试，全程在 Twitch 直播，总测试时长达到 141 小时。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/026.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-20 23:45</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="爱范儿" data-text="早报｜特努斯：iphone duo是乔布斯理念体现/小米18 pro确认涨价/西贝否认倒闭传闻 · google gemini 安全测试越界，误攻 3 家真实企业 · 长鑫存储 g5 dram 平台量产，单片晶圆裸片数提升至少 50% · 智谱 maas 平台将上线数据内容不留存机制 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://www.ifanr.com/1681049" target="_blank" rel="noopener">早报｜特努斯：iPhone Duo是乔布斯理念体现/小米18 Pro确认涨价/西贝否认倒闭传闻</a></div>
+      <p class="sum">· Google Gemini 安全测试越界，误攻 3 家真实企业 · 长鑫存储 G5 DRAM 平台量产，单片晶圆裸片数提升至少 50% · 智谱 MaaS 平台将上线数据内容不留存机制 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://www.ifanr.com/1681049" target="_blank" rel="noopener">📡 爱范儿</a>
+        
+        <span>🕐 09-21 00:14</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="Hacker News (高赞 AI)" data-text="海盗脸拯救被删除的llm模型en ">
+      <div class="title">🔗 <a href="https://pirateface.co/" target="_blank" rel="noopener">海盗脸拯救被删除的LLM模型en</a></div>
+      
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://pirateface.co/" target="_blank" rel="noopener">📡 Hacker News (高赞 AI)</a>
+        
+        <span>🕐 09-20 15:16</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="arXiv" data-text="日常 ai 代理使用中的价值敏感委托：来自 openclaw 的证据en 用户越来越多地将工作委托给自主人工智能代理，但评估通常衡量任务完成情况，而不是用户优先考虑的价值。使用价值敏感设计，在 llm 的帮助下，我们分析了 73,093 个有关使用 openclaw 的第一人称 reddit 帖子，每个帖子都包含其人类价值、代理方面、价值实现和用户结果。这 21 个价值观形成了 6 个价值观组，包括“自治”、“可靠”、“经济实惠”、“有界”en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22067v1" target="_blank" rel="noopener">日常 AI 代理使用中的价值敏感委托：来自 OpenClaw 的证据en</a></div>
+      <p class="sum">用户越来越多地将工作委托给自主人工智能代理，但评估通常衡量任务完成情况，而不是用户优先考虑的价值。使用价值敏感设计，在 LLM 的帮助下，我们分析了 73,093 个有关使用 OpenClaw 的第一人称 Reddit 帖子，每个帖子都包含其人类价值、代理方面、价值实现和用户结果。这 21 个价值观形成了 6 个价值观组，包括“自治”、“可靠”、“经济实惠”、“有界”en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22067v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:55</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="arXiv" data-text="可用的护栏：验证跨 ml 系统的选择性预测en 选择性预测器充当安全门：仅当预测看起来足够可信时，它才返回输出。部署越来越需要针对每个感兴趣的报告单元（例如工具、策略标签或患者亚组）以目标精度对这种可靠性进行认证。主要的困难往往不是授予的证书是否有效，而是有限的校准数据是否可以产生证书。由于大门是en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22048v1" target="_blank" rel="noopener">可用的护栏：验证跨 ML 系统的选择性预测en</a></div>
+      <p class="sum">选择性预测器充当安全门：仅当预测看起来足够可信时，它才返回输出。部署越来越需要针对每个感兴趣的报告单元（例如工具、策略标签或患者亚组）以目标精度对这种可靠性进行认证。主要的困难往往不是授予的证书是否有效，而是有限的校准数据是否可以产生证书。由于大门是en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22048v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:36</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="arXiv" data-text="基于三信号互补的llm代理的可解释记忆决策控制器：解耦置信度和一致性en 大型语言模型的记忆系统主要关注高效检索，而检索到的记忆是否应该可信的决定却受到相对较少的关注。当记忆存储包含冲突位置时，标准检索增强生成（rag）会盲目注入记忆并放大幻觉：在容易受到内存注入的模型中，冲突m下的rag幻觉率en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22043v1" target="_blank" rel="noopener">基于三信号互补的LLM代理的可解释记忆决策控制器：解耦置信度和一致性en</a></div>
+      <p class="sum">大型语言模型的记忆系统主要关注高效检索，而检索到的记忆是否应该可信的决定却受到相对较少的关注。当记忆存储包含冲突位置时，标准检索增强生成（RAG）会盲目注入记忆并放大幻觉：在容易受到内存注入的模型中，冲突m下的RAG幻觉率en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22043v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:34</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="arXiv" data-text="llm 代理中可控意见动态的贝叶斯信念层en 社会模拟中的llm代理人隐式地修改了他们的观点，在上下文中：代理人对说服的开放程度既无法指定也无法验证，并且集体结果继承了模型的先验训练。我们引入贝叶斯编年史智能体（bca），这是一个最小的信念层，将智能体相信的内容与它所说的方式分开。每个立场都是一个概率，根据听到的每句话更新一个贝叶斯步骤。单一先验实力en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21997v1" target="_blank" rel="noopener">LLM 代理中可控意见动态的贝叶斯信念层en</a></div>
+      <p class="sum">社会模拟中的LLM代理人隐式地修改了他们的观点，在上下文中：代理人对说服的开放程度既无法指定也无法验证，并且集体结果继承了模型的先验训练。我们引入贝叶斯编年史智能体（BCA），这是一个最小的信念层，将智能体相信的内容与它所说的方式分开。每个立场都是一个概率，根据听到的每句话更新一个贝叶斯步骤。单一先验实力en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21997v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:57</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="arXiv" data-text="语言模型的测谎仪测试：阅读模型不会透露的知识en 大型语言模型可以保存它们未报告的知识。一个模型可能会在能力评估中充当沙袋，或者根据其内部已知的内容进行回答，并且仅靠其输出无法判断它是否隐藏了答案或根本没有答案。我们借用了隐藏信息测试，这是一种法证方法，通过向嫌疑人提供看似可信的诱饵中的真实细节，并测量对信息的更强反应来识别有罪知识。en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21996v1" target="_blank" rel="noopener">语言模型的测谎仪测试：阅读模型不会透露的知识en</a></div>
+      <p class="sum">大型语言模型可以保存它们未报告的知识。一个模型可能会在能力评估中充当沙袋，或者根据其内部已知的内容进行回答，并且仅靠其输出无法判断它是否隐藏了答案或根本没有答案。我们借用了隐藏信息测试，这是一种法证方法，通过向嫌疑人提供看似可信的诱饵中的真实细节，并测量对信息的更强反应来识别有罪知识。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21996v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:57</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="arXiv" data-text="autoviewmem：会话长期记忆的自配置正交视图en 长期记忆对于大型语言模型 (llm) 代理来说至关重要，以在扩展交互中保持一致性和个性化。现有的记忆系统通常依赖于固定的粒度或静态模式，但是当异构信息（例如偏好、事件、约束和时间更新）嵌入到单个混合表示中时，这些设计就会陷入困境。由此产生的语义干扰使得 top-k 检索变得困难en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21940v1" target="_blank" rel="noopener">AutoViewMem：会话长期记忆的自配置正交视图en</a></div>
+      <p class="sum">长期记忆对于大型语言模型 (LLM) 代理来说至关重要，以在扩展交互中保持一致性和个性化。现有的记忆系统通常依赖于固定的粒度或静态模式，但是当异构信息（例如偏好、事件、约束和时间更新）嵌入到单个混合表示中时，这些设计就会陷入困境。由此产生的语义干扰使得 top-K 检索变得困难en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21940v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:55</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="arXiv" data-text="法学硕士作为文本和表格预测的特征工程师en 我们引入了一个迭代框架，可以自动从表格预测模型的非结构化文本中提取可解释的、模式绑定的分类特征。为了导航特征空间，生成器llm提出语义定义，单独的提取器llm具体化特征，下游表格模型评估其预测性能。我们通过转换显式模型错误来优化此搜索，例如 auc ranen">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21894v1" target="_blank" rel="noopener">法学硕士作为文本和表格预测的特征工程师en</a></div>
+      <p class="sum">我们引入了一个迭代框架，可以自动从表格预测模型的非结构化文本中提取可解释的、模式绑定的分类特征。为了导航特征空间，生成器LLM提出语义定义，单独的提取器LLM具体化特征，下游表格模型评估其预测性能。我们通过转换显式模型错误来优化此搜索，例如 AUC ranen</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21894v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:22</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-multimodal" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🎨 多模态生成</h2><span class="sec-badge" style="background:#f59e0b" data-cat="multimodal" data-total="2">2</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#f59e0b" data-cat="multimodal" data-src="arXiv" data-text="nemotronlabs voicechat：具有工具调用功能的开放式全双工语音到语音模型en 我们推出 nemotronlabs voicechat，这是一种具有本机工具调用功能的开放式全双工语音到语音模型。 nemotronlabs voicechat 将流式语音编码器和纯解码器语言模型与用于代理文本和结构化函数调用的并行专用输出流、用于增量用户转录的辅助 rnn-t 分支以及流式 tts 解码器相结合。这种设计使模型能够聆听、转录、推理、ienzh-cn">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21967v1" target="_blank" rel="noopener">NemotronLabs VoiceChat：具有工具调用功能的开放式全双工语音到语音模型en</a></div>
+      <p class="sum">我们推出 NemotronLabs VoiceChat，这是一种具有本机工具调用功能的开放式全双工语音到语音模型。 NemotronLabs VoiceChat 将流式语音编码器和纯解码器语言模型与用于代理文本和结构化函数调用的并行专用输出流、用于增量用户转录的辅助 RNN-T 分支以及流式 TTS 解码器相结合。这种设计使模型能够聆听、转录、推理、ienzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#f59e0b">🎨 多模态生成</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21967v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:27</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#f59e0b" data-cat="multimodal" data-src="arXiv" data-text="掩蔽离散扩散中 tau 跳跃的调度优化en 掩蔽离散扩散模型通常使用所谓的 tau 跳跃离散化方法来加速，该方法在每个采样步骤并行显示多个坐标。采样器用乘积分布替换每个显示块的联合条件律，即使使用完美学习的预测器，也会产生因式分解错误 $\varepsilon_\text{fact}$ 。我们使用 $k$ 样本分析 $n$ 坐标上的标准采样器en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21960v1" target="_blank" rel="noopener">掩蔽离散扩散中 tau 跳跃的调度优化en</a></div>
+      <p class="sum">掩蔽离散扩散模型通常使用所谓的 tau 跳跃离散化方法来加速，该方法在每个采样步骤并行显示多个坐标。采样器用乘积分布替换每个显示块的联合条件律，即使使用完美学习的预测器，也会产生因式分解错误 $\varepsilon_\text{fact}$ 。我们使用 $K$ 样本分析 $N$ 坐标上的标准采样器en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#f59e0b">🎨 多模态生成</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21960v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:18</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-agents" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🤖 智能体与应用</h2><span class="sec-badge" style="background:#10b981" data-cat="agents" data-total="6">6</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="GitHub" data-text="mitkox/esf 自托管工程软件工厂：temporal、cubesandbox 代理、确定性验证和持久证据。麻省理工学院许可的机械师前叉。en">
+      <div class="title">🔗 <a href="https://github.com/mitkox/esf" target="_blank" rel="noopener">mitkox/esf</a></div>
+      <p class="sum">自托管工程软件工厂：Temporal、CubeSandbox 代理、确定性验证和持久证据。麻省理工学院许可的机械师前叉。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://github.com/mitkox/esf" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 09-19 16:07</span>
+        <span>⭐ 71</span>
+        <span class="score-wrap"><span class="bar"><i style="width:44%"></i></span><span class="score-num">44</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="IT之家" data-text="系统检测工具 hwinfo 8.53 beta 发布，新增英特尔 nova lake qs cpu 支持 it之家 9 月 21 日消息，系统检测工具 hwinfo 现已更新 8.53 beta 版本，新增英特尔 nova lake qs 样片 cpu 支持，同步修复 sa vid 报告。 据it之家了解，英特尔处理器的 qs 代表“资格认证样品”（qualification sample）。qs 处理器出现标志着该架构 cpu 开发已经接近完成，通常出现在英特尔向合作伙伴提供的早期工程样品之后， 而且距离最终零售版已经比较接近 。 同时，此次修复的 system agent vid 虽然支持小细节，但这可能意味着 hwinfo 正在基于真实硬件遥测数据开发软件，部分测试人员可能已经拿到了 nova lake qs 样品。zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/032.htm" target="_blank" rel="noopener">系统检测工具 HWiNFO 8.53 Beta 发布，新增英特尔 Nova Lake QS CPU 支持</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，系统检测工具 HWiNFO 现已更新 8.53 Beta 版本，新增英特尔 Nova Lake QS 样片 CPU 支持，同步修复 SA VID 报告。 据IT之家了解，英特尔处理器的 QS 代表“资格认证样品”（Qualification Sample）。QS 处理器出现标志着该架构 CPU 开发已经接近完成，通常出现在英特尔向合作伙伴提供的早期工程样品之后， 而且距离最终零售版已经比较接近 。 同时，此次修复的 System Agent VID 虽然支持小细节，但这可能意味着 HWiNFO 正在基于真实硬件遥测数据开发软件，部分测试人员可能已经拿到了 Nova Lake QS 样品。zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/032.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 00:13</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="量子位" data-text="汽车行业首个ai超级智能体「迪迪虾」来了！腾势多款车型即将ota 近日，比亚迪重磅发布了ai超级智能体「迪迪虾」，首搭腾势n8l纯电车型上">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/493091.html" target="_blank" rel="noopener">汽车行业首个AI超级智能体「迪迪虾」来了！腾势多款车型即将OTA</a></div>
+      <p class="sum">近日，比亚迪重磅发布了AI超级智能体「迪迪虾」，首搭腾势N8L纯电车型上</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>业界首个 / 首创方向</div>
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/493091.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-21 01:48</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="量子位" data-text="谷歌ai首次“越狱”：竟然自己破解密码入侵三家公司！ 亚马逊云科技给企业安全用agent打了个样">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/492912.html" target="_blank" rel="noopener">谷歌AI首次“越狱”：竟然自己破解密码入侵三家公司！</a></div>
+      <p class="sum">亚马逊云科技给企业安全用Agent打了个样</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/492912.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-20 08:01</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="arXiv" data-text="recreationworld：混合计算机使用代理的可扩展且可验证的环境en 计算机使用代理（cua）沿着两条不同的路线发展：图形交互以及通过代码和命令行进行的软件开发。真正的数字工作需要两者，交错而不是端到端堆叠。我们研究混合 cua，它们自主决定何时探索界面、实现软件以及运行和直观地验证其工件。我们介绍 recreationworld，一个围绕娱乐构建的五平台框架：gienzh-cn">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22000v1" target="_blank" rel="noopener">RecreationWorld：混合计算机使用代理的可扩展且可验证的环境en</a></div>
+      <p class="sum">计算机使用代理（CUA）沿着两条不同的路线发展：图形交互以及通过代码和命令行进行的软件开发。真正的数字工作需要两者，交错而不是端到端堆叠。我们研究混合 CUA，它们自主决定何时探索界面、实现软件以及运行和直观地验证其工件。我们介绍 RecreationWorld，一个围绕娱乐构建的五平台框架：gienzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22000v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="Hacker News (高赞 AI)" data-text="编码代理线束设计的实证研究en ">
+      <div class="title">🔗 <a href="https://arxiv.org/abs/2609.20804" target="_blank" rel="noopener">编码代理线束设计的实证研究en</a></div>
+      
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://arxiv.org/abs/2609.20804" target="_blank" rel="noopener">📡 Hacker News (高赞 AI)</a>
+        
+        <span>🕐 09-18 13:06</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-opensource" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🛠️ 开源项目与工具</h2><span class="sec-badge" style="background:#0ea5e9" data-cat="opensource" data-total="17">17</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="GitHub" data-text="savka777/jev-use 说出来，你的 mac 就会做到。 jev 上的计算机使用线束可通过辅助功能读取屏幕。快速、无视觉模型en">
+      <div class="title">🔗 <a href="https://github.com/savka777/jev-use" target="_blank" rel="noopener">savka777/jev-use</a></div>
+      <p class="sum">说出来，你的 Mac 就会做到。 Jev 上的计算机使用线束可通过辅助功能读取屏幕。快速、无视觉模型en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://github.com/savka777/jev-use" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 09-19 14:05</span>
+        <span>⭐ 76</span>
+        <span class="score-wrap"><span class="bar"><i style="width:44%"></i></span><span class="score-num">44</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="GitHub" data-text="hyperspaceai/jevcache typesafe jev 类模型的决策缓存 — 记忆决策，因此重复是免费的、确定性的和可共享的。一个 2 mb 二进制文件。enzh-cn">
+      <div class="title">🔗 <a href="https://github.com/hyperspaceai/jevcache" target="_blank" rel="noopener">hyperspaceai/jevcache</a></div>
+      <p class="sum">TypeSafe Jev 类模型的决策缓存 — 记忆决策，因此重复是免费的、确定性的和可共享的。一个 2 MB 二进制文件。enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://github.com/hyperspaceai/jevcache" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 09-18 11:22</span>
+        <span>⭐ 60</span>
+        <span class="score-wrap"><span class="bar"><i style="width:43%"></i></span><span class="score-num">43</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="GitHub" data-text="lxsssssss/pdf-translate ">
+      <div class="title">🔗 <a href="https://github.com/lxsssssss/pdf-translate" target="_blank" rel="noopener">lxsssssss/pdf-translate</a></div>
+      
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://github.com/lxsssssss/pdf-translate" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 09-15 02:55</span>
+        <span>⭐ 50</span>
+        <span class="score-wrap"><span class="bar"><i style="width:39%"></i></span><span class="score-num">39</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="GitHub" data-text="asepochs/epochflow 可观测、可评测、可部署的多 agent 工程平台：结构化路由、skills、工具/rag、50 模型实验中心与 llm-as-judge。fastapi + vue。zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://github.com/ASEpochs/epochflow" target="_blank" rel="noopener">ASEpochs/epochflow</a></div>
+      <p class="sum">可观测、可评测、可部署的多 Agent 工程平台：结构化路由、Skills、工具/RAG、50 模型实验中心与 LLM-as-Judge。FastAPI + Vue。zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://github.com/ASEpochs/epochflow" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 09-18 15:08</span>
+        <span>⭐ 5</span>
+        <span class="score-wrap"><span class="bar"><i style="width:33%"></i></span><span class="score-num">33</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="HuggingFace" data-text="hittler-ai/flux.2-klein-multi-lora space 在线应用（可直接体验） · 👍 48">
+      <div class="title">🔗 <a href="https://huggingface.co/spaces/Hittler-AI/FLUX.2-Klein-Multi-LoRA" target="_blank" rel="noopener">Hittler-AI/FLUX.2-Klein-Multi-LoRA</a></div>
+      <p class="sum">Space 在线应用（可直接体验） · 👍 48</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://huggingface.co/spaces/Hittler-AI/FLUX.2-Klein-Multi-LoRA" target="_blank" rel="noopener">📡 HuggingFace</a>
+        
+        <span>🕐 07-28 14:34</span>
+        <span>👍 48</span>
+        <span class="score-wrap"><span class="bar"><i style="width:31%"></i></span><span class="score-num">31</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="HuggingFace" data-text="00000tt/ltx-2.3-10eros space 在线应用（可直接体验） · 👍 28">
+      <div class="title">🔗 <a href="https://huggingface.co/spaces/00000tt/LTX-2.3-10Eros" target="_blank" rel="noopener">00000tt/LTX-2.3-10Eros</a></div>
+      <p class="sum">Space 在线应用（可直接体验） · 👍 28</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://huggingface.co/spaces/00000tt/LTX-2.3-10Eros" target="_blank" rel="noopener">📡 HuggingFace</a>
+        
+        <span>🕐 07-31 23:53</span>
+        <span>👍 28</span>
+        <span class="score-wrap"><span class="bar"><i style="width:30%"></i></span><span class="score-num">30</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="IT之家" data-text="idc：2026 上半年全球四足机器人出货量同比增长 92.5%，宇树、云深处、智元三大国产厂商霸榜 it之家 9 月 21 日消息，国际数据公司（idc）今日最新发布的《全球四足机器人市场份额，1h26》报告显示， 2026 年上半年，全球四足机器人出货量超过 4.9 万台，同比增长 92.5% ；市场规模超 4 亿美元 （it之家注：现汇率约合 26.82 亿元人民币） 。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/123.htm" target="_blank" rel="noopener">IDC：2026 上半年全球四足机器人出货量同比增长 92.5%，宇树、云深处、智元三大国产厂商霸榜</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，国际数据公司（IDC）今日最新发布的《全球四足机器人市场份额，1H26》报告显示， 2026 年上半年，全球四足机器人出货量超过 4.9 万台，同比增长 92.5% ；市场规模超 4 亿美元 （IT之家注：现汇率约合 26.82 亿元人民币） 。</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>性能超越 4.9（领先同类）</div>
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/123.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 03:53</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="IT之家" data-text="雷神移动工作站 ai master m7000 发售：锐龙 ai max+ 395，64gb 内存 + 85gb ai ssd 缓存 it之家 9 月 21 日消息，雷神 (thunderobot) 现已正式发售其移动工作站笔记本电脑 ai master m7000， 定价 24999 元 。 该机型基于 amd 锐龙 ai max+ 395 &quot;strix halo&quot; 处理器，配备 64gb lpddr5x-8000 内存， 1tb ssd 划分为 768gb 常规存储和 85gb 的 s…">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/069.htm" target="_blank" rel="noopener">雷神移动工作站 AI Master M7000 发售：锐龙 AI Max+ 395，64GB 内存 + 85GB AI SSD 缓存</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，雷神 (THUNDEROBOT) 现已正式发售其移动工作站笔记本电脑 AI Master M7000， 定价 24999 元 。 该机型基于 AMD 锐龙 AI Max+ 395 &quot;Strix Halo&quot; 处理器，配备 64GB LPDDR5X-8000 内存， 1TB SSD 划分为 768GB 常规存储和 85GB 的 S…</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/069.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 02:03</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="IT之家" data-text="被质疑“偷传代码”后智谱 zcode 官宣开源：已完成整改并向所有用户道歉 it之家 9 月 21 日消息，智谱 zcode 今日宣布，针对社区反馈的 zcode 产品安全问题， 官方已经完成整改，并向所有用户道歉 。 智谱已将 zcode 开源 ( https://github.com/zai-org/zcode )，把代码交给社区监督，让 zcode 变得开放、透明。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/046.htm" target="_blank" rel="noopener">被质疑“偷传代码”后智谱 ZCode 官宣开源：已完成整改并向所有用户道歉</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，智谱 ZCode 今日宣布，针对社区反馈的 ZCode 产品安全问题， 官方已经完成整改，并向所有用户道歉 。 智谱已将 ZCode 开源 ( https://github.com/zai-org/ZCode )，把代码交给社区监督，让 ZCode 变得开放、透明。</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>开源项目</div>
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/046.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 01:02</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="IT之家" data-text="英伟达显卡底层细节揭秘：包含数十个 risc-v 核心，甚至已接管图形驱动执行 it之家 9 月 21 日消息，据科技媒体 xda 报道，英伟达 gpu 实际上包含数十个 risc-v 核心，部分特殊核心甚至已经接管图形驱动执行。 据报道，这些 risc-v 核心存在于英伟达 gpu 之中，它们并不负责着色器计算，而是负责图形计算之外的大量额外工作。根据型号不同， 每块 gpu 内部拥有 10-40 个这种核心 。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/039.htm" target="_blank" rel="noopener">英伟达显卡底层细节揭秘：包含数十个 RISC-V 核心，甚至已接管图形驱动执行</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，据科技媒体 XDA 报道，英伟达 GPU 实际上包含数十个 RISC-V 核心，部分特殊核心甚至已经接管图形驱动执行。 据报道，这些 RISC-V 核心存在于英伟达 GPU 之中，它们并不负责着色器计算，而是负责图形计算之外的大量额外工作。根据型号不同， 每块 GPU 内部拥有 10-40 个这种核心 。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/039.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 00:41</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="量子位" data-text="idc评估中国ai算力管理平台：范式综合评分位列第一，四项关键维度获满分 范式成为《中国ai算力管理平台技术能力评估，2026》综合评分位列第一的厂商。">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/493109.html" target="_blank" rel="noopener">IDC评估中国AI算力管理平台：范式综合评分位列第一，四项关键维度获满分</a></div>
+      <p class="sum">范式成为《中国AI算力管理平台技术能力评估，2026》综合评分位列第一的厂商。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/493109.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-21 02:17</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="量子位" data-text="apus 开源国内首批jev跨平台复现：国产模型实现秒级决策 9月19日，中国人工智能企业apus旗下 ai 实验室公布了全球最早一批针对jev的独立开源复现成果">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/492939.html" target="_blank" rel="noopener">APUS 开源国内首批Jev跨平台复现：国产模型实现秒级决策</a></div>
+      <p class="sum">9月19日，中国人工智能企业APUS旗下 AI 实验室公布了全球最早一批针对Jev的独立开源复现成果</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>开源项目</div>
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/492939.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-20 08:30</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="arXiv" data-text="标签噪声下鲁棒图卷积网络学习的粒子竞争与合作en 图卷积网络（gcn）对标签噪声高度敏感，因为损坏的监督可以通过图传播并降低学习的节点表示。这项工作提出了 pcc+gcn，这是一种混合框架，在 gcn 训练之前使用粒子竞争与合作（pcc）作为基于图的标签细化阶段。 pcc通过粒子支配动力学识别可疑的标记节点，并确定它们的标签是否en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22053v1" target="_blank" rel="noopener">标签噪声下鲁棒图卷积网络学习的粒子竞争与合作en</a></div>
+      <p class="sum">图卷积网络（GCN）对标签噪声高度敏感，因为损坏的监督可以通过图传播并降低学习的节点表示。这项工作提出了 PCC+GCN，这是一种混合框架，在 GCN 训练之前使用粒子竞争与合作（PCC）作为基于图的标签细化阶段。 PCC通过粒子支配动力学识别可疑的标记节点，并确定它们的标签是否en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22053v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:46</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="arXiv" data-text="quranicmmlu：用于评估古兰经语言知识生成人工智能解决方案的认知感知基准en 我们推出了 quranicmmlu，这是一个跨语言复杂性的多个维度评估古兰经阿拉伯语生成人工智能的基准。现有的《古兰经》基准以一般问题回答和语义检索为中心，没有探究特定的语言能力或按认知需求和经文难度进行分层。我们构建了一个涵盖音系学、形态学、句法学、语义学和语用学的五支柱古兰经分类法，其中 3en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22038v1" target="_blank" rel="noopener">QuranicMMLU：用于评估古兰经语言知识生成人工智能解决方案的认知感知基准en</a></div>
+      <p class="sum">我们推出了 QuranicMMLU，这是一个跨语言复杂性的多个维度评估古兰经阿拉伯语生成人工智能的基准。现有的《古兰经》基准以一般问题回答和语义检索为中心，没有探究特定的语言能力或按认知需求和经文难度进行分层。我们构建了一个涵盖音系学、形态学、句法学、语义学和语用学的五支柱古兰经分类法，其中 3en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22038v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:30</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="arXiv" data-text="diavlo：视觉语言模型的诊断行为en 视觉语言模型 (vlm) 依赖于在其子组件之间存储和传输适当的信息。验证 vlm 是否表现出所需的行为，同时避免有害的行为，是其可靠部署的核心。然而，识别vlm行为的方法仍然很少。我们提出 diavlo，一个诊断框架，利用人工管理和 vlm 的生成能力来构建所需和观察的规范en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22008v1" target="_blank" rel="noopener">DiaVLo：视觉语言模型的诊断行为en</a></div>
+      <p class="sum">视觉语言模型 (VLM) 依赖于在其子组件之间存储和传输适当的信息。验证 VLM 是否表现出所需的行为，同时避免有害的行为，是其可靠部署的核心。然而，识别VLM行为的方法仍然很少。我们提出 DiaVLo，一个诊断框架，利用人工管理和 VLM 的生成能力来构建所需和观察的规范en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22008v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:06</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="arXiv" data-text="道德熵：道德判断中的审计偏差和不确定性en 计算伦理学领域的大多数工作都将注释者对道德内容的分歧视为要被投票否决的噪音，在单个注释者标记一个项目时，会陷入多数投票或更宽松的任何注释者规则。我们认为应该对这种不确定性进行建模并从中学习。   我们引入道德熵，这是一个贝叶斯框架，它对真实标签保持完整的后验，并将其熵分解为任意不确定性（iren">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21992v1" target="_blank" rel="noopener">道德熵：道德判断中的审计偏差和不确定性en</a></div>
+      <p class="sum">计算伦理学领域的大多数工作都将注释者对道德内容的分歧视为要被投票否决的噪音，在单个注释者标记一个项目时，会陷入多数投票或更宽松的任何注释者规则。我们认为应该对这种不确定性进行建模并从中学习。   我们引入道德熵，这是一个贝叶斯框架，它对真实标签保持完整的后验，并将其熵分解为任意不确定性（iren</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21992v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:51</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="arXiv" data-text="切向量场回归的黎曼联立推理en 我们考虑无边界黎曼流形上的非参数正切向量场回归。由于不同点的响应位于不同的切线空间中，因此所提出的核估计器首先将附近的响应并行传输到目标切线空间，然后形成体积校正的局部平均值。我们首先推导其均匀二阶偏差、有限带宽协方差和随机率。对于同时推理，en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21910v1" target="_blank" rel="noopener">切向量场回归的黎曼联立推理en</a></div>
+      <p class="sum">我们考虑无边界黎曼流形上的非参数正切向量场回归。由于不同点的响应位于不同的切线空间中，因此所提出的核估计器首先将附近的响应并行传输到目标切线空间，然后形成体积校正的局部平均值。我们首先推导其均匀二阶偏差、有限带宽协方差和随机率。对于同时推理，en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21910v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:34</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-industry" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>📈 行业动态</h2><span class="sec-badge" style="background:#64748b" data-cat="industry" data-total="24">24</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="能在 100 米高空救援的无人机：“天目山九号”飞行平台发布，一次能载 3 个人 it之家 9 月 21 日消息，天目山实验室“天目山九号”高鲁棒性系留式高层营救飞行平台发布仪式于 9 月 19 日在北航杭州国际校园举行。 现场开展了“天目山九号”模拟营救实景飞行演示。在消防登高车无法抵达楼顶的演习设定背景下，实验楼顶楼发生模拟火情，有人员在楼顶被困。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/119.htm" target="_blank" rel="noopener">能在 100 米高空救援的无人机：“天目山九号”飞行平台发布，一次能载 3 个人</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，天目山实验室“天目山九号”高鲁棒性系留式高层营救飞行平台发布仪式于 9 月 19 日在北航杭州国际校园举行。 现场开展了“天目山九号”模拟营救实景飞行演示。在消防登高车无法抵达楼顶的演习设定背景下，实验楼顶楼发生模拟火情，有人员在楼顶被困。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/119.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 03:34</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="消息称特斯拉机器人团队在长三角审厂，多家企业已获订单 it之家 9 月 21 日消息，据澎湃新闻今日报道，产业链人士透露， 特斯拉机器人团队已经于上周在拓普集团、三花智控、均胜电子等供应链企业开启审厂工作 。上述企业主要供给关节模组、执行器、精密结构件等核心机电部件。 “在本次审厂前， 这些企业都已经拿到了特斯拉人形机器人的订单 ，只是或多或少的区别。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/100.htm" target="_blank" rel="noopener">消息称特斯拉机器人团队在长三角审厂，多家企业已获订单</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，据澎湃新闻今日报道，产业链人士透露， 特斯拉机器人团队已经于上周在拓普集团、三花智控、均胜电子等供应链企业开启审厂工作 。上述企业主要供给关节模组、执行器、精密结构件等核心机电部件。 “在本次审厂前， 这些企业都已经拿到了特斯拉人形机器人的订单 ，只是或多或少的区别。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/100.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 02:54</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="造谣企业要求“收费删帖”：自媒体博主利用 ai 生成不实文章敲诈 230 万元被抓 it之家 9 月 21 日消息，据央视新闻报道，近年来，部分自媒体涉企网络“黑嘴”刻意捏造企业负面信息，严重扰乱企业正常生产经营与市场秩序。今年以来，上海警方共侦破涉企谣言案件百余起，依法清理涉企不实信息 8.7 万余条；累计侦破涉企黑客类案件 68 起，抓获犯罪嫌疑人 210 余名。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/086.htm" target="_blank" rel="noopener">造谣企业要求“收费删帖”：自媒体博主利用 AI 生成不实文章敲诈 230 万元被抓</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，据央视新闻报道，近年来，部分自媒体涉企网络“黑嘴”刻意捏造企业负面信息，严重扰乱企业正常生产经营与市场秩序。今年以来，上海警方共侦破涉企谣言案件百余起，依法清理涉企不实信息 8.7 万余条；累计侦破涉企黑客类案件 68 起，抓获犯罪嫌疑人 210 余名。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/086.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 02:25</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="深蓝 s07 ai 激光版 9 月 28 日登场，搭载 ai 激光感知方案与超级三电系统 it之家 9 月 21 日消息，深蓝汽车今天在微博宣布，全新深蓝 s07 ai 激光版将于 9 月 28 日登场。新车搭载 ai 激光感知方案，拥有超级三电系统。 据it之家此前报道 ，在今年 6 月的 2026 重庆国际车展期间，深蓝汽车正式推出全新深蓝 s07 华为乾崑激光版增程车型。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/084.htm" target="_blank" rel="noopener">深蓝 S07 AI 激光版 9 月 28 日登场，搭载 AI 激光感知方案与超级三电系统</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，深蓝汽车今天在微博宣布，全新深蓝 S07 AI 激光版将于 9 月 28 日登场。新车搭载 AI 激光感知方案，拥有超级三电系统。 据IT之家此前报道 ，在今年 6 月的 2026 重庆国际车展期间，深蓝汽车正式推出全新深蓝 S07 华为乾崑激光版增程车型。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/084.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 02:11</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="曝特斯拉得州 optimus 机器人工厂主结构接近完工，投产仍需时日 it之家 9 月 21 日消息，x 平台博主 joe tegtmeyer 近日使用无人机观察特斯拉得克萨斯州超级工厂，显示该工厂的主体钢结构已经接近完工。 tegtmeyer 表示，该工厂的钢结构已经接近建筑北侧边缘，距北侧外围梁大约还差 5 个柱网。且工厂上方的三层楼正在浇筑混凝土，更多区域也在铺设钢筋，为后续浇筑做准备。 该名博主还认为，特斯拉得州 optimus 机器人工厂目标年产能为 1,000 万台，生产工作预计将在 2027 年晚些时候开始。 不过需要注意的是，特斯拉在 2026 年二季度财报中表示，加州和得州的 optimus 工厂都还处于建设状态，弗里蒙特工厂已经停用 model x 和 model s 生产线，计划改装为 optimus 产线。从官方表述中我们可以看出，这些工厂距离实际投产仍有一定距离。zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/052.htm" target="_blank" rel="noopener">曝特斯拉得州 Optimus 机器人工厂主结构接近完工，投产仍需时日</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，X 平台博主 Joe Tegtmeyer 近日使用无人机观察特斯拉得克萨斯州超级工厂，显示该工厂的主体钢结构已经接近完工。 Tegtmeyer 表示，该工厂的钢结构已经接近建筑北侧边缘，距北侧外围梁大约还差 5 个柱网。且工厂上方的三层楼正在浇筑混凝土，更多区域也在铺设钢筋，为后续浇筑做准备。 该名博主还认为，特斯拉得州 Optimus 机器人工厂目标年产能为 1,000 万台，生产工作预计将在 2027 年晚些时候开始。 不过需要注意的是，特斯拉在 2026 年二季度财报中表示，加州和得州的 Optimus 工厂都还处于建设状态，弗里蒙特工厂已经停用 Model X 和 Model S 生产线，计划改装为 Optimus 产线。从官方表述中我们可以看出，这些工厂距离实际投产仍有一定距离。zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/052.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 01:15</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="华为余承东官宣智界 rx 及鸿蒙智行新品发布会定档 9 月 28 日，享界 v8 同步开启预订 it之家 9 月 21 日闪讯速报，华为常务董事、产品投资评审委员会主任、终端 bg 董事长余承东刚刚宣布，智界 rx 及鸿蒙智行新品发布会定档 9 月 28 日 14:30 举行。 余承东直言， 智界 rx 是鸿蒙智行最好开的车 。 另外，鸿蒙智行“家庭智慧旗舰 mpv”享界 v8 也将同步开启预订。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/044.htm" target="_blank" rel="noopener">华为余承东官宣智界 RX 及鸿蒙智行新品发布会定档 9 月 28 日，享界 V8 同步开启预订</a></div>
+      <p class="sum">IT之家 9 月 21 日闪讯速报，华为常务董事、产品投资评审委员会主任、终端 BG 董事长余承东刚刚宣布，智界 RX 及鸿蒙智行新品发布会定档 9 月 28 日 14:30 举行。 余承东直言， 智界 RX 是鸿蒙智行最好开的车 。 另外，鸿蒙智行“家庭智慧旗舰 MPV”享界 V8 也将同步开启预订。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/044.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 00:58</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="rokid 新一代乐奇 ai 眼镜 9 月 24 日数贸会发布 it之家 9 月 21 日消息，rokid（乐奇）昨日宣布， 新一代乐奇 ai 眼镜将于 9 月 24 日 14:00 在中国浙江杭州举行的第五届全球数字贸易博览会现场发布 ，口号为 &quot;less tool. more human&quot;“不是工具，是感官的延伸”。 it之家了解到，初代乐奇 ai 眼镜基于高通 ar1 soc，采用 micro led + 衍射光波导的双目显示方案，分辨率 480×640、亮度 1500nits、视场角 30°，配备 3024×4032 摄像头，内置 2 扬声器 4 麦克风。zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/005/042.htm" target="_blank" rel="noopener">Rokid 新一代乐奇 AI 眼镜 9 月 24 日数贸会发布</a></div>
+      <p class="sum">IT之家 9 月 21 日消息，Rokid（乐奇）昨日宣布， 新一代乐奇 AI 眼镜将于 9 月 24 日 14:00 在中国浙江杭州举行的第五届全球数字贸易博览会现场发布 ，口号为 &quot;Less tool. More human&quot;“不是工具，是感官的延伸”。 IT之家了解到，初代乐奇 AI 眼镜基于高通 AR1 SoC，采用 Micro LED + 衍射光波导的双目显示方案，分辨率 480×640、亮度 1500nits、视场角 30°，配备 3024×4032 摄像头，内置 2 扬声器 4 麦克风。zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/005/042.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 09-21 00:48</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="爱范儿" data-text="森海塞尔 momentum 5 体验：ai 时代的稳重选择 耳机依旧是耳机，只是如今一副好耳机既要足够好听，也要能够接住你的声音。 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。">
+      <div class="title">🔗 <a href="https://www.ifanr.com/1681181" target="_blank" rel="noopener">森海塞尔 MOMENTUM 5 体验：AI 时代的稳重选择</a></div>
+      <p class="sum">耳机依旧是耳机，只是如今一副好耳机既要足够好听，也要能够接住你的声音。 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ifanr.com/1681181" target="_blank" rel="noopener">📡 爱范儿</a>
+        
+        <span>🕐 09-21 02:24</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="爱范儿" data-text="19999 元起，启元机器人想把「个人机器人」先卖进普通人的生活 比造机器人更难的，可能是给机器人找到「应用」。 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。">
+      <div class="title">🔗 <a href="https://www.ifanr.com/1681137" target="_blank" rel="noopener">19999 元起，启元机器人想把「个人机器人」先卖进普通人的生活</a></div>
+      <p class="sum">比造机器人更难的，可能是给机器人找到「应用」。 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ifanr.com/1681137" target="_blank" rel="noopener">📡 爱范儿</a>
+        
+        <span>🕐 09-20 13:10</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="还剩 6 天，即可为 techcrunch disrupt 2026 节省高达 200 美元en 目前的票价将于 6 天后即 9 月 25 日晚上 11:59 结束。 pt。加入 disrupt 的 10,000 多名创始人、投资者和技术领导者的行列，届时您的门票可节省高达 200 美元。en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/09/20/6-days-left-to-get-ahead-at-techcrunch-disrupt-2026/" target="_blank" rel="noopener">还剩 6 天，即可为 TechCrunch Disrupt 2026 节省高达 200 美元en</a></div>
+      <p class="sum">目前的票价将于 6 天后即 9 月 25 日晚上 11:59 结束。 PT。加入 Disrupt 的 10,000 多名创始人、投资者和技术领导者的行列，届时您的门票可节省高达 200 美元。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/09/20/6-days-left-to-get-ahead-at-techcrunch-disrupt-2026/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 09-20 21:41</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="世界模特公司保守了很多秘密en 世界模型领域的每个人都坐拥大量现金和大量的嗡嗡声，但祝你好运，让任何人——从创始人到他们自己的数据供应商——告诉你他们实际上在构建什么。en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/09/20/world-model-companies-are-keeping-a-lot-of-secrets/" target="_blank" rel="noopener">世界模特公司保守了很多秘密en</a></div>
+      <p class="sum">世界模型领域的每个人都坐拥大量现金和大量的嗡嗡声，但祝你好运，让任何人——从创始人到他们自己的数据供应商——告诉你他们实际上在构建什么。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/09/20/world-model-companies-are-keeping-a-lot-of-secrets/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 09-20 20:29</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="人工智能行业真的准备好放慢脚步了吗？en 在股权方面，我们讨论了人工智能高管是否真的想放慢脚步。en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/09/20/is-the-ai-industry-really-ready-to-slow-down/" target="_blank" rel="noopener">人工智能行业真的准备好放慢脚步了吗？en</a></div>
+      <p class="sum">在股权方面，我们讨论了人工智能高管是否真的想放慢脚步。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/09/20/is-the-ai-industry-really-ready-to-slow-down/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 09-20 18:56</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="vocci 的戒指为会议笔记增添了新的外形en vocci 的轻质戒指售价 249 美元，可能会带来一些隐私问题en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/09/20/voccis-ring-adds-a-new-form-factor-to-meeting-note-taking/" target="_blank" rel="noopener">Vocci 的戒指为会议笔记增添了新的外形en</a></div>
+      <p class="sum">Vocci 的轻质戒指售价 249 美元，可能会带来一些隐私问题en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/09/20/voccis-ring-adds-a-new-form-factor-to-meeting-note-taking/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 09-20 18:32</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="scrolled 希望将教科书变成 tiktoken scrolled 将教科书变成可滚动的、类似 instagram 的内容，包含视频、音频和测验。这家位于帕洛阿尔托的初创公司由学生联合创始人（及配偶）utsav gupta 和 rebecca neff 创立，在 techcrunch disrupt 上进行宣传。enzh-cn">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/09/20/scrolled-wants-to-turn-textbooks-into-tiktok/" target="_blank" rel="noopener">ScrollEd 希望将教科书变成 TikToken</a></div>
+      <p class="sum">ScrollEd 将教科书变成可滚动的、类似 Instagram 的内容，包含视频、音频和测验。这家位于帕洛阿尔托的初创公司由学生联合创始人（及配偶）Utsav Gupta 和 Rebecca Neff 创立，在 TechCrunch Disrupt 上进行宣传。enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/09/20/scrolled-wants-to-turn-textbooks-into-tiktok/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 09-20 18:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="Hacker News (高赞 AI)" data-text="prompts aren’t real ">
+      <div class="title">🔗 <a href="https://evaluation.club" target="_blank" rel="noopener">Prompts aren’t Real</a></div>
+      
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://evaluation.club" target="_blank" rel="noopener">📡 Hacker News (高赞 AI)</a>
+        
+        <span>🕐 09-20 15:59</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="Hacker News (高赞 AI)" data-text="人工智能与知识共享的破坏en ">
+      <div class="title">🔗 <a href="https://www.chesterwisniewski.com/post/2026-09-13-ai-is-destroying-the-creative-commons/" target="_blank" rel="noopener">人工智能与知识共享的破坏en</a></div>
+      
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.chesterwisniewski.com/post/2026-09-13-ai-is-destroying-the-creative-commons/" target="_blank" rel="noopener">📡 Hacker News (高赞 AI)</a>
+        
+        <span>🕐 09-20 10:07</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="百曜科技发起，《ai虚拟细胞（aivc）技术趋势、产业生态与应用前景研究报告》正式发布 《ai 虚拟细胞（aivc）技术趋势、产业生态与应用前景研究报告——ai 时代生命科学的新型基础设施》正式发布。">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/493114.html" target="_blank" rel="noopener">百曜科技发起，《AI虚拟细胞（AIVC）技术趋势、产业生态与应用前景研究报告》正式发布</a></div>
+      <p class="sum">《AI 虚拟细胞（AIVC）技术趋势、产业生态与应用前景研究报告——AI 时代生命科学的新型基础设施》正式发布。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/493114.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-21 02:28</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="刚刚，剪映发了个大的：ai生视频和ai剪辑的壁，被打破了！ 剪映hub+剪映助手，好用">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/492973.html" target="_blank" rel="noopener">刚刚，剪映发了个大的：AI生视频和AI剪辑的壁，被打破了！</a></div>
+      <p class="sum">剪映Hub+剪映助手，好用</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>刷新评测纪录</div>
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/492973.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-20 14:30</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="华为首发企业ai白皮书：ai让员工更快了，怎样让整个企业受益？ ai越来越能干，企业该怎么用">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/493068.html" target="_blank" rel="noopener">华为首发企业AI白皮书：AI让员工更快了，怎样让整个企业受益？</a></div>
+      <p class="sum">AI越来越能干，企业该怎么用</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/493068.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-20 14:23</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="一张3090就能跑！全栈国产模型，把ai办公搬到企业本地 ai办公这块蛋糕，中国电信可能要先切走一块了。">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/492946.html" target="_blank" rel="noopener">一张3090就能跑！全栈国产模型，把AI办公搬到企业本地</a></div>
+      <p class="sum">AI办公这块蛋糕，中国电信可能要先切走一块了。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/492946.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-20 12:22</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="预售价31.98万-38.98万元，腾势z9s展车抵达全国166城334家门店 腾势z9s迎来成都车展首秀">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/09/492873.html" target="_blank" rel="noopener">预售价31.98万-38.98万元，腾势Z9S展车抵达全国166城334家门店</a></div>
+      <p class="sum">腾势Z9S迎来成都车展首秀</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/09/492873.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 09-20 07:51</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="Hacker News (高赞 AI)" data-text="你能说出哪些图像是人工智能生成的吗？en ">
+      <div class="title">🔗 <a href="https://slop-sense.labtoagi.com/games/is-this-image-ai/" target="_blank" rel="noopener">你能说出哪些图像是人工智能生成的吗？en</a></div>
+      
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://slop-sense.labtoagi.com/games/is-this-image-ai/" target="_blank" rel="noopener">📡 Hacker News (高赞 AI)</a>
+        
+        <span>🕐 09-19 23:02</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="The Verge AI" data-text="英伟达 (nvidia) 的黄仁勋 (jensen huang) 认为人工智能的担忧被夸大了，这一点没有人感到惊讶。en 那些可能从人工智能热潮中赚到最多钱的人似乎认为自己比其他人更了解，包括几十年来研究和工作人工智能的研究人员。在周日早上接受哥伦比亚广播公司采访时，他声称人工智能终结的“可能性是 0%” […]en">
+      <div class="title">🔗 <a href="https://www.theverge.com/ai-artificial-intelligence/997936/nvidia-jensen-huang-ai-fears-overblown" target="_blank" rel="noopener">英伟达 (Nvidia) 的黄仁勋 (Jensen Huang) 认为人工智能的担忧被夸大了，这一点没有人感到惊讶。en</a></div>
+      <p class="sum">那些可能从人工智能热潮中赚到最多钱的人似乎认为自己比其他人更了解，包括几十年来研究和工作人工智能的研究人员。在周日早上接受哥伦比亚广播公司采访时，他声称人工智能终结的“可能性是 0%” […]en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.theverge.com/ai-artificial-intelligence/997936/nvidia-jensen-huang-ai-fears-overblown" target="_blank" rel="noopener">📡 The Verge AI</a>
+        
+        
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:20%"></i></span><span class="score-num">20</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="The Verge AI" data-text="特朗普现在表示他想组建一支“人工智能部队”en 总统在truth social上发帖称，他想任命一位“人工智能沙皇”来领导一支新的“人工智能力量”。在他宣布这一消息之际，来自各个政治派别甚至行业内部的呼吁越来越多，要求遏制人工智能的发展。他发帖称，他的政府“不会以任何方式阻碍[...]enzh-cn">
+      <div class="title">🔗 <a href="https://www.theverge.com/ai-artificial-intelligence/997867/trump-ai-force-ai-czar" target="_blank" rel="noopener">特朗普现在表示他想组建一支“人工智能部队”en</a></div>
+      <p class="sum">总统在Truth Social上发帖称，他想任命一位“人工智能沙皇”来领导一支新的“人工智能力量”。在他宣布这一消息之际，来自各个政治派别甚至行业内部的呼吁越来越多，要求遏制人工智能的发展。他发帖称，他的政府“不会以任何方式阻碍[...]enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.theverge.com/ai-artificial-intelligence/997867/trump-ai-force-ai-czar" target="_blank" rel="noopener">📡 The Verge AI</a>
+        
+        
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:20%"></i></span><span class="score-num">20</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-research" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🔬 研究前沿</h2><span class="sec-badge" style="background:#8b5cf6" data-cat="research" data-total="26">26</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="GitHub" data-text="omnijev/awesome-jev-gallery 🔥🔥 system one 模型和 jev 背后的论文、公开复制品和独立评估。en">
+      <div class="title">🔗 <a href="https://github.com/OmniJev/awesome-jev-gallery" target="_blank" rel="noopener">OmniJev/awesome-jev-gallery</a></div>
+      <p class="sum">🔥🔥 System One 模型和 Jev 背后的论文、公开复制品和独立评估。en</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>社区热度位居本榜前 10%</div>
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="https://github.com/OmniJev/awesome-jev-gallery" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 09-17 20:16</span>
+        <span>⭐ 113</span>
+        <span class="score-wrap"><span class="bar"><i style="width:43%"></i></span><span class="score-num">43</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="designer-rsi：从用户流量中进化程序内存以实现代理图形设计en 专业的图形设计是一项长期的代理任务，其中结构化的、可编辑的工件是从许多相互依赖的动作中产生的，但结果却没有可靠的程序预言。我们引入了一个持续适应框架，其中冻结前沿模型通过 230 多种工具运行专业设计软件，而自然语言技能的外部程序记忆则积累和完善可重用的设计程序en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22086v1" target="_blank" rel="noopener">Designer-RSI：从用户流量中进化程序内存以实现代理图形设计en</a></div>
+      <p class="sum">专业的图形设计是一项长期的代理任务，其中结构化的、可编辑的工件是从许多相互依赖的动作中产生的，但结果却没有可靠的程序预言。我们引入了一个持续适应框架，其中冻结前沿模型通过 230 多种工具运行专业设计软件，而自然语言技能的外部程序记忆则积累和完善可重用的设计程序en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22086v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:59</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="职业事故叙述中事故过程角色分类的跨部门概括en 职业事故叙述包含有关工作情况、不利条件、事故事件及其后果的宝贵信息。自动构建这些叙述可以促进大规模事故分析并支持职业风险预防。然而，用于描述事故的术语和写作风格在不同部门和组织之间存在很大差异，这引发了人们对自动化能力的质疑。en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22081v1" target="_blank" rel="noopener">职业事故叙述中事故过程角色分类的跨部门概括en</a></div>
+      <p class="sum">职业事故叙述包含有关工作情况、不利条件、事故事件及其后果的宝贵信息。自动构建这些叙述可以促进大规模事故分析并支持职业风险预防。然而，用于描述事故的术语和写作风格在不同部门和组织之间存在很大差异，这引发了人们对自动化能力的质疑。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22081v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:59</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="codemidas：从代码本身扩展代理编码 rl 环境en 通过强化学习（rl）训练有能力的编码代理需要可靠的验证者执行不同的任务。开源代码库提供了此类任务的丰富来源，而现有方法通常依赖于问题和提交等开发工件，从而限制了可以提取的任务范围。为了更好地扩展 rl 环境，我们推出了 codemidas，这是一种代理管道，可将现有代码库中实现的功能转化为 een">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22068v1" target="_blank" rel="noopener">CodeMidas：从代码本身扩展代理编码 RL 环境en</a></div>
+      <p class="sum">通过强化学习（RL）训练有能力的编码代理需要可靠的验证者执行不同的任务。开源代码库提供了此类任务的丰富来源，而现有方法通常依赖于问题和提交等开发工件，从而限制了可以提取的任务范围。为了更好地扩展 RL 环境，我们推出了 CodeMidas，这是一种代理管道，可将现有代码库中实现的功能转化为 een</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>开源项目</div>
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22068v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:55</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="brainwidebench：对多区域神经记录中的大规模预训练和跨动物转移进行基准测试en 大规模神经记录的进步使得收集许多动物和分布式大脑区域的数据成为可能，这就提出了一个问题：是否可以利用这种规模来学习可跨不同下游任务转移的通用神经表征。然而，实现这一目标的进展受到分散的评估协议和对单个任务领域的狭隘关注的限制。在这里，我们介绍 brainwidebench，a benzh-cn">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22064v1" target="_blank" rel="noopener">BrainWideBench：对多区域神经记录中的大规模预训练和跨动物转移进行基准测试en</a></div>
+      <p class="sum">大规模神经记录的进步使得收集许多动物和分布式大脑区域的数据成为可能，这就提出了一个问题：是否可以利用这种规模来学习可跨不同下游任务转移的通用神经表征。然而，实现这一目标的进展受到分散的评估协议和对单个任务领域的狭隘关注的限制。在这里，我们介绍 BrainWideBench，a benzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22064v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:54</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="多跳检索中的可预测失败：分数分布置信度评分和弃权en 多跳检索失败在查询中的分布并不均匀：它们聚集在结构上可预测的子群中。我们证明了形式化该结构的两个结果。首先（cwar 可归约性）：当且仅当检索特征携带有关成功的相互信息时，才可以实现置信失败减少，这是 llm 判断管道满足的条件，但在仅密集设置中要弱得多，这解释了 auc-ac 之间的差距en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22056v1" target="_blank" rel="noopener">多跳检索中的可预测失败：分数分布置信度评分和弃权en</a></div>
+      <p class="sum">多跳检索失败在查询中的分布并不均匀：它们聚集在结构上可预测的子群中。我们证明了形式化该结构的两个结果。首先（CWAR 可归约性）：当且仅当检索特征携带有关成功的相互信息时，才可以实现置信失败减少，这是 LLM 判断管道满足的条件，但在仅密集设置中要弱得多，这解释了 AUC-AC 之间的差距en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22056v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:48</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="对持续学习作文任务的世界模型进行基准测试en 世界模型的一个理想特性是能够跨任务持续学习，适应新环境，而不会忘记代理已经学到的东西。特别是，保留和重用从先前经验中获得的知识的能力支撑了智能体有效适应新环境的能力，因为物理世界的动态通常可以用循环机制来描述。然而，世界模型的测量en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22055v1" target="_blank" rel="noopener">对持续学习作文任务的世界模型进行基准测试en</a></div>
+      <p class="sum">世界模型的一个理想特性是能够跨任务持续学习，适应新环境，而不会忘记代理已经学到的东西。特别是，保留和重用从先前经验中获得的知识的能力支撑了智能体有效适应新环境的能力，因为物理世界的动态通常可以用循环机制来描述。然而，世界模型的测量en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22055v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:46</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="$λ$-受控 grpo：将流量匹配比不稳定转化为预算资源en 强化学习越来越多地用于将图像生成器与奖励信号对齐，flow-grpo 最近将这种范式扩展到流匹配模型，将去噪采样器视为可以根据奖励反馈进行优化​​的随机策略。这种设置中的训练在多步去噪方面是不稳定的：策略更新在去噪步骤中系统性地变化，重要性比漂移到低于 1，en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22041v1" target="_blank" rel="noopener">$λ$-受控 GRPO：将流量匹配比不稳定转化为预算资源en</a></div>
+      <p class="sum">强化学习越来越多地用于将图像生成器与奖励信号对齐，Flow-GRPO 最近将这种范式扩展到流匹配模型，将去噪采样器视为可以根据奖励反馈进行优化​​的随机策略。这种设置中的训练在多步去噪方面是不稳定的：策略更新在去噪步骤中系统性地变化，重要性比漂移到低于 1，en</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>比 不稳定转化为预算资源en 强</div>
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22041v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:33</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="gricea：对话式人工智能研究的开放科学平台en 我们需要大规模研究对话式人工智能 (cai)，以了解人类行为并塑造 cai 设计。然而，系统和研究配置的碎片化报告阻碍了复制、扩展和知识积累。我们推出了 gricea，一个开放科学平台，将研究表示为可配置、可部署的研究工件，研究人员可以运行、检查、共享和重用。根据对先前 cai 研究的形成性分析，en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22039v1" target="_blank" rel="noopener">Gricea：对话式人工智能研究的开放科学平台en</a></div>
+      <p class="sum">我们需要大规模研究对话式人工智能 (CAI)，以了解人类行为并塑造 CAI 设计。然而，系统和研究配置的碎片化报告阻碍了复制、扩展和知识积累。我们推出了 Gricea，一个开放科学平台，将研究表示为可配置、可部署的研究工件，研究人员可以运行、检查、共享和重用。根据对先前 CAI 研究的形成性分析，en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22039v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:31</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="complex：多参数持久性模块的封闭式认证嵌入en 我们所知道的每一个多参数持久性矢量化都带有单侧 lipschitz 上限，并且没有低于它的内容：如果没有下限，则特征没有忠实性，并且无法在其上建立预预测保证。这张纸补足了缺失的一面。 complex 是一种封闭式、免训练的多参数模块嵌入——沿着固定的近对角线网络对模块进行切片，通过en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22012v1" target="_blank" rel="noopener">COMPLEX：多参数持久性模块的封闭式认证嵌入en</a></div>
+      <p class="sum">我们所知道的每一个多参数持久性矢量化都带有单侧 Lipschitz 上限，并且没有低于它的内容：如果没有下限，则特征没有忠实性，并且无法在其上建立预预测保证。这张纸补足了缺失的一面。 COMPLEX 是一种封闭式、免训练的多参数模块嵌入——沿着固定的近对角线网络对模块进行切片，通过en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22012v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:08</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="弃权和噪声过滤：softmax attention 的两个缺失原语en 据报道，控制注意力的价值路径可以改善语言模型预训练，但之前的研究对其原因存在分歧。我们争论并提供了实验证据，证明这样的门提供了 softmax 注意力所缺乏的两个不同的东西：弃权和噪声过滤。第一个是弃权，它允许注意力头不输出任何内容，绕过注意力权重必须总和为 1 的要求。第二个是噪声过滤，这包括en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.22005v1" target="_blank" rel="noopener">弃权和噪声过滤：Softmax Attention 的两个缺失原语en</a></div>
+      <p class="sum">据报道，控制注意力的价值路径可以改善语言模型预训练，但之前的研究对其原因存在分歧。我们争论并提供了实验证据，证明这样的门提供了 softmax 注意力所缺乏的两个不同的东西：弃权和噪声过滤。第一个是弃权，它允许注意力头不输出任何内容，绕过注意力权重必须总和为 1 的要求。第二个是噪声过滤，这包括en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.22005v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 17:03</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="用于方棒束预测的 ctf 子通道代码中基于机器学习的临界热通量模型的评估en 临界热通量（chf）是核热工水力学中与安全相关的关键量，其预测仍然是一个重要的挑战，因为它与燃料性能和反应堆安全直接相关。最近的研究表明，相对于传统的经验相关性和查找表 (lut)，机器学习 (ml) 方法可以显着提高 chf 预测的准确性。然而，大多数基于机器学习的 chf 模型已经开发出来en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21995v1" target="_blank" rel="noopener">用于方棒束预测的 CTF 子通道代码中基于机器学习的临界热通量模型的评估en</a></div>
+      <p class="sum">临界热通量（CHF）是核热工水力学中与安全相关的关键量，其预测仍然是一个重要的挑战，因为它与燃料性能和反应堆安全直接相关。最近的研究表明，相对于传统的经验相关性和查找表 (LUT)，机器学习 (ML) 方法可以显着提高 CHF 预测的准确性。然而，大多数基于机器学习的 CHF 模型已经开发出来en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21995v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:56</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="通过光谱对齐的潜在流量匹配生成时间序列en 潜流模型已被证明是一种可靠且经济高效的时间序列生成方法。然而，潜在的压缩会导致不必要的伪影，例如与底层数据集的光谱不匹配，从而阻碍它们作为训练替代品的使用。在本文中，我们提出了一种光谱对齐的潜在流时间序列生成器，其中流匹配的潜在空间经过训练以保留动态属性en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21989v1" target="_blank" rel="noopener">通过光谱对齐的潜在流量匹配生成时间序列en</a></div>
+      <p class="sum">潜流模型已被证明是一种可靠且经济高效的时间序列生成方法。然而，潜在的压缩会导致不必要的伪影，例如与底层数据集的光谱不匹配，从而阻碍它们作为训练替代品的使用。在本文中，我们提出了一种光谱对齐的潜在流时间序列生成器，其中流匹配的潜在空间经过训练以保留动态属性en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21989v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:49</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="游戏中不断后悔的乘法乐观主义en 我们引入了乘法乐观遗憾匹配（morm），这是一种用于有限一般和博弈的非耦合学习规则。在同时全信息自我博弈下，每个玩家仅使用一步乐观，在所有范围内统一实现外部遗憾 $o(\sqrt n\log d)$。该分析将基于潜力的后悔匹配论证与乘法稳定性和海林格对策略运动的控制相结合。学习率保障en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21976v1" target="_blank" rel="noopener">游戏中不断后悔的乘法乐观主义en</a></div>
+      <p class="sum">我们引入了乘法乐观遗憾匹配（MORM），这是一种用于有限一般和博弈的非耦合学习规则。在同时全信息自我博弈下，每个玩家仅使用一步乐观，在所有范围内统一实现外部遗憾 $O(\sqrt n\log d)$。该分析将基于潜力的后悔匹配论证与乘法稳定性和海林格对策略运动的控制相结合。学习率保障en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21976v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:38</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="学习心脏特征：跨时间和运动的心电图生物识别en 心电图 (ecg) 具有特定主题的模式，可实现可靠的个体识别，构成心电图生物识别的基础。除了身份验证之外，这种范例还具有保护敏感心脏数据并充当自我监督学习中的借口任务的巨大潜力。然而，大多数研究仍然局限于单次静息数据，对时间和生理变化的鲁棒性基本上未经测试。我们地址en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21962v1" target="_blank" rel="noopener">学习心脏特征：跨时间和运动的心电图生物识别en</a></div>
+      <p class="sum">心电图 (ECG) 具有特定主题的模式，可实现可靠的个体识别，构成心电图生物识别的基础。除了身份验证之外，这种范例还具有保护敏感心脏数据并充当自我监督学习中的借口任务的巨大潜力。然而，大多数研究仍然局限于单次静息数据，对时间和生理变化的鲁棒性基本上未经测试。我们地址en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21962v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:22</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="racer：人类-人工智能路由的角色匹配能力估计en 学习服从要求预测系统何时自主行动，何时服从人类专家。群体自适应延迟使用一小部分专家行为的上下文将此问题扩展到看不见的专家。 l2d-pop 等神经上下文编码器可以依赖于查询，但可以学习与绝对类坐标相关的路由快捷方式。无身份延期 (ifd) 通过角色索引的类别能力简介消除了此类捷径en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21953v1" target="_blank" rel="noopener">RACER：人类-人工智能路由的角色匹配能力估计en</a></div>
+      <p class="sum">学习服从要求预测系统何时自主行动，何时服从人类专家。群体自适应延迟使用一小部分专家行为的上下文将此问题扩展到看不见的专家。 L2D-Pop 等神经上下文编码器可以依赖于查询，但可以学习与绝对类坐标相关的路由快捷方式。无身份延期 (IFD) 通过角色索引的类别能力简介消除了此类捷径en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21953v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:11</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="学习移动城市：城市网络校准和控制的深层元模型和强化策略en 城市交通网络带来了复杂的优化挑战，包括高保真模拟器的校准和实时操作控制。本文提出了一个共享的潜在空间框架，通过城市交通动态的共同学习表示将模拟器校准和强化学习控制连接起来。首先，我们开发了一个组合 mlp 自动编码器架构，可以学习低维流形链接en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21945v1" target="_blank" rel="noopener">学习移动城市：城市网络校准和控制的深层元模型和强化策略en</a></div>
+      <p class="sum">城市交通网络带来了复杂的优化挑战，包括高保真模拟器的校准和实时操作控制。本文提出了一个共享的潜在空间框架，通过城市交通动态的共同学习表示将模拟器校准和强化学习控制连接起来。首先，我们开发了一个组合 MLP 自动编码器架构，可以学习低维流形链接en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21945v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:03</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="使用矩阵指数定点迭代引导量子博弈主体达到平衡en 近年来，量子博弈论作为利用量子原理研究多智能体系统决策的框架而受到广泛关注。然而，计算平衡策略具有挑战性，因为联合希尔伯特空间的维度随着参与者局部维度的乘积而增长。在本文中，我们考虑一种扩展的 gutoski-watrous (egw) 游戏，其中每个玩家的量子策略由enzh-cn">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21944v1" target="_blank" rel="noopener">使用矩阵指数定点迭代引导量子博弈主体达到平衡en</a></div>
+      <p class="sum">近年来，量子博弈论作为利用量子原理研究多智能体系统决策的框架而受到广泛关注。然而，计算平衡策略具有挑战性，因为联合希尔伯特空间的维度随着参与者局部维度的乘积而增长。在本文中，我们考虑一种扩展的 Gutoski-Watrous (EGW) 游戏，其中每个玩家的量子策略由enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21944v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 16:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="发生故障的机器人何时应该询问？根据经过审核的传感器证据启动纠正性人机对话en 任务失败的机器人面临纠正对话中的第一个决定：根据自己的诊断采取行动，咨询另一个机载传感器，或者打断人。做出好的选择需要了解机器人的传感器揭示了多少原因以及机器人自身的诊断有多可靠。我们建立了一个模拟基准，其中每个故障的真正原因都是已知的，因为我们注入了它，并测量每个传感器揭示的内容，并通过显式检查en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21942v1" target="_blank" rel="noopener">发生故障的机器人何时应该询问？根据经过审核的传感器证据启动纠正性人机对话en</a></div>
+      <p class="sum">任务失败的机器人面临纠正对话中的第一个决定：根据自己的诊断采取行动，咨询另一个机载传感器，或者打断人。做出好的选择需要了解机器人的传感器揭示了多少原因以及机器人自身的诊断有多可靠。我们建立了一个模拟基准，其中每个故障的真正原因都是已知的，因为我们注入了它，并测量每个传感器揭示的内容，并通过显式检查en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21942v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:56</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="使用高效符号恢复进行端到端硬标签密码分析模型提取en 深度神经网络（dnn）的重要性被广泛认可，通过训练获得的参数被视为宝贵的资产。最近，iacr 会议上积极研究了仅使用 dnn 的 oracle 查询来提取这些参数的攻击。硬标签设置是模型提取中最具挑战性的设置，其中对手只能观察到最终的输出标签，例如“狗”或“猫”。在 eurocrypten">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21941v1" target="_blank" rel="noopener">使用高效符号恢复进行端到端硬标签密码分析模型提取en</a></div>
+      <p class="sum">深度神经网络（DNN）的重要性被广泛认可，通过训练获得的参数被视为宝贵的资产。最近，IACR 会议上积极研究了仅使用 DNN 的 Oracle 查询来提取这些参数的攻击。硬标签设置是模型提取中最具挑战性的设置，其中对手只能观察到最终的输出标签，例如“狗”或“猫”。在 Eurocrypten</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21941v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:56</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="使用部分充电数据联合预测锂离子电池的剩余使用寿命和容量en 联合剩余使用寿命 (rul) 预测和容量估计需要表示逐渐退化和最近的电池行为。本文提出了一个跨专家框架，使用部分充电测量，而不将测量的历史全周期容量作为输入。 rul expert 使用预训练的门控循环单元 (gru) 编码器（一种二元循环编码器）对 30 周期历史中采样的 10 个周期中的标称 10 分钟片段进行编码。en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21932v1" target="_blank" rel="noopener">使用部分充电数据联合预测锂离子电池的剩余使用寿命和容量en</a></div>
+      <p class="sum">联合剩余使用寿命 (RUL) 预测和容量估计需要表示逐渐退化和最近的电池行为。本文提出了一个跨专家框架，使用部分充电测量，而不将测量的历史全周期容量作为输入。 RUL Expert 使用预训练的门控循环单元 (GRU) 编码器（一种二元循环编码器）对 30 周期历史中采样的 10 个周期中的标称 10 分钟片段进行编码。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21932v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:51</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="扭结与平滑度：类拉普拉斯源的实解析 nica 的可识别性en 许多机器学习系统试图用生成复杂数据的隐藏的独立因素来解释它们，例如图像或金融时间序列。恢复真正的潜在因素，而不是它们的一些混乱版本，是非线性独立分量分析 (nica) 的核心挑战。当源概率为实解析生成函数时，我们证明了可识别性（精确恢复）直至微不足道的模糊性en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21926v1" target="_blank" rel="noopener">扭结与平滑度：类拉普拉斯源的实解析 nICA 的可识别性en</a></div>
+      <p class="sum">许多机器学习系统试图用生成复杂数据的隐藏的独立因素来解释它们，例如图像或金融时间序列。恢复真正的潜在因素，而不是它们的一些混乱版本，是非线性独立分量分析 (nICA) 的核心挑战。当源概率为实解析生成函数时，我们证明了可识别性（精确恢复）直至微不足道的模糊性en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21926v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:48</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="接下来我们应该问什么？部分证据下的检索感知问题学习en 部分证据下的交互式检索是一个顺序信息获取问题：代理必须决定哪个问题将为下一次检索更新创建最有用的证据。现有系统通过模仿候选 qa 对的离线排序来训练这一决策，尽管问题价值是由它引发的响应及其对检索的下游影响决定的。我们确定候选人的歧视性和每en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21924v1" target="_blank" rel="noopener">接下来我们应该问什么？部分证据下的检索感知问题学习en</a></div>
+      <p class="sum">部分证据下的交互式检索是一个顺序信息获取问题：代理必须决定哪个问题将为下一次检索更新创建最有用的证据。现有系统通过模仿候选 QA 对的离线排序来训练这一决策，尽管问题价值是由它引发的响应及其对检索的下游影响决定的。我们确定候选人的歧视性和每en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21924v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:45</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="超越运动学：肌肉驱动模仿学习的模拟保真度基准测试en 在这项工作中，我们对两种最先进的运动模仿强化学习 (mirl) 管道进行了系统比较，一种基于 scone/hyfydy，另一种基于 mujoco/myosim。 hyfydy 通过详细的肌腱建模强调生理真实性，而 mujoco 则优先考虑计算效率和可扩展的策略学习。虽然最近的工作表明这两个管道都以高保真度再现了人体运动学en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21909v1" target="_blank" rel="noopener">超越运动学：肌肉驱动模仿学习的模拟保真度基准测试en</a></div>
+      <p class="sum">在这项工作中，我们对两种最先进的运动模仿强化学习 (MIRL) 管道进行了系统比较，一种基于 SCONE/HyFyDy，另一种基于 MuJoCo/MyoSim。 HyFyDy 通过详细的肌腱建模强调生理真实性，而 MuJoCo 则优先考虑计算效率和可扩展的策略学习。虽然最近的工作表明这两个管道都以高保真度再现了人体运动学en</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>性能超越 运动学（领先同类）</div>
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21909v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:34</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="干预粒度很重要：临床世界模型反事实模拟中的连贯治疗包en 使用临床世界模型进行反事实模拟意味着修复患者的病史、改变治疗方法并读出预测的反应。这样做需要决定什么算作一项干预措施。在临床环境中，干预措施被记录为捆绑包：mimic-iv 对 945,707 个患者小时的共现审计显示了组件组，例如透析回路的每个参数，它们从未分开出现，因此编辑en">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21906v1" target="_blank" rel="noopener">干预粒度很重要：临床世界模型反事实模拟中的连贯治疗包en</a></div>
+      <p class="sum">使用临床世界模型进行反事实模拟意味着修复患者的病史、改变治疗方法并读出预测的反应。这样做需要决定什么算作一项干预措施。在临床环境中，干预措施被记录为捆绑包：MIMIC-IV 对 945,707 个患者小时的共现审计显示了组件组，例如透析回路的每个参数，它们从未分开出现，因此编辑en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21906v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:33</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="arXiv" data-text="expbon：高效测试时间 llm 对齐的指数噪声 best-of-$n$en best-of-$n$ (bon) 采样是一种简单而有效的推理时间对齐方法，但硬最大化仅提供对奖励和分配偏移之间权衡的粗略控制。 soft best-of-$n$（verdun et al. 2025）提供更平滑的控制并收敛到与 kl 正则化奖励最大化相关的最优分布。在本文中，我们介绍了 expbon，一种基于指数噪声的替代软 bon 方法enzh-cn">
+      <div class="title">🔗 <a href="http://arxiv.org/abs/2609.21899v1" target="_blank" rel="noopener">ExpBoN：高效测试时间 LLM 对齐的指数噪声 Best-of-$n$en</a></div>
+      <p class="sum">Best-of-$n$ (BoN) 采样是一种简单而有效的推理时间对齐方法，但硬最大化仅提供对奖励和分配偏移之间权衡的粗略控制。 Soft Best-of-$n$（Verdun et al. 2025）提供更平滑的控制并收敛到与 KL 正则化奖励最大化相关的最优分布。在本文中，我们介绍了 ExpBoN，一种基于指数噪声的替代软 BoN 方法enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="http://arxiv.org/abs/2609.21899v1" target="_blank" rel="noopener">📡 arXiv</a>
+        
+        <span>🕐 09-18 15:26</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:24%"></i></span><span class="score-num">24</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-policy" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>⚖️ 政策与安全</h2><span class="sec-badge" style="background:#ef4444" data-cat="policy" data-total="1">1</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#ef4444" data-cat="policy" data-src="The Verge AI" data-text="人类，而不是流氓人工智能，仍然是能源系统最大的网络安全风险en 在最近备受瞩目的黑客事件引发人工智能可能“杀死所有人类”的担忧之前，我们的能源系统已经非常容易受到网络攻击，而且这种风险正在不断增加。 “我们一直是猎物。我们只是在捕食者的胃口下生存，”约书亚·科曼（joshua corman），公共安全和复原力驻地主管 […]enzh-cn">
+      <div class="title">🔗 <a href="https://www.theverge.com/science/997834/ai-cyberattack-energy-critical-infrastructure" target="_blank" rel="noopener">人类，而不是流氓人工智能，仍然是能源系统最大的网络安全风险en</a></div>
+      <p class="sum">在最近备受瞩目的黑客事件引发人工智能可能“杀死所有人类”的担忧之前，我们的能源系统已经非常容易受到网络攻击，而且这种风险正在不断增加。 “我们一直是猎物。我们只是在捕食者的胃口下生存，”约书亚·科曼（Joshua Corman），公共安全和复原力驻地主管 […]enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#ef4444">⚖️ 政策与安全</span>
+        <a class="srclink" href="https://www.theverge.com/science/997834/ai-cyberattack-energy-critical-infrastructure" target="_blank" rel="noopener">📡 The Verge AI</a>
+        
+        
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:20%"></i></span><span class="score-num">20</span></span>
+      </div>
+      
+    </div></div></section><p class="note" id="no-res" hidden style="text-align:center;padding:34px 0">🫙 没有匹配的条目——试试更换信源或关键词</p>
+<footer><div class="container"><hr>
+<p style="color:#ef4444">⚠️ 数据源异常（连续失败），已自动容错：AI Hot 每日精选(27天：页面结构变化：未找到 initialItems)</p>
+<p>报告生成时间：2026-09-21 04:07 ｜ 数据库累计收录 2652 条</p>
+<p>来源分布：arXiv(40)、IT之家(15)、GitHub(11)、量子位(9)、HuggingFace(8)、TechCrunch AI(5)、Hacker News (高赞 AI)(5)、爱范儿(3)、The Verge AI(3)</p>
+<p>本报告由 AI 项目信息收集平台自动抓取公开数据源生成，内容版权归原作者所有。</p>
+<p><a href="weekly.html">📊 查看近 7 天周报</a> ｜ <a href="index.html">← 返回历史报告列表</a></p>
+</div></footer>
+
+<script>
+(function () {
+  // 板块折叠：点击标题在展开/折叠间切换
+  document.querySelectorAll("[data-sec] .sec-head").forEach(function (h) {
+    h.addEventListener("click", function () {
+      var sec = h.closest("section");
+      if (sec) sec.classList.toggle("collapsed");
+    });
+  });
+  // 点导航 chip 时展开对应分类；若正有热词/搜索/信源筛选，则一并清空，
+  // 避免某分类被筛选隐藏后「点不开」
+  document.querySelectorAll('nav.cats a.chip[href^="#"]').forEach(function (a) {
+    a.addEventListener("click", function () {
+      src = ""; q = ""; kw = "";
+      var sel = document.getElementById("srcsel"); if (sel) sel.value = "";
+      var qbox = document.getElementById("q"); if (qbox) qbox.value = "";
+      document.querySelectorAll(".chip.kw.active").forEach(function (c) { c.classList.remove("active"); });
+      var id = a.getAttribute("href").slice(1);
+      var sec = document.getElementById(id);
+      if (sec) {
+        sec.classList.toggle("collapsed");            // 点击类目按钮折叠/展开
+        if (!sec.classList.contains("collapsed")) {
+          sec.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+      apply();
+    });
+  });
+
+  var src = "";   // 选中的信源，空 = 全部
+  var q = "";     // 搜索关键词（小写）
+  var kw = "";    // 今日热词筛选（小写）
+  // 规范化：与后端热词计数同一套规则（去空格/连字符/标点，保留字母数字与中文），
+  // 让 "Claude5" 也能命中卡片里的 "Claude 5"，且热词条数 = 实际筛出卡片数
+  function _norm(s) { return (s || "").toLowerCase().replace(/[^a-z0-9一-鿿]/g, ""); }
+  function matches(c) {
+    if (src && c.getAttribute("data-src") !== src) return false;
+    var raw = (c.getAttribute("data-text") || "");
+    if (q) {
+      var nq = _norm(q), ntq = _norm(raw);
+      if (nq && ntq.indexOf(nq) === -1) return false;
+    }
+    if (kw) {
+      var nk = _norm(kw), ntk = _norm(raw);
+      if (nk && ntk.indexOf(nk) === -1) return false;
+    }
+    return true;
+  }
+  function apply() {
+    var filtering = !!(src || q || kw);
+    var n = 0, firstVisible = null;
+    var catCounts = {};   // 各分类「筛选后命中数」
+    document.querySelectorAll(".card[data-src]").forEach(function (c) {
+      var ok = matches(c);
+      if (!ok) {
+        c.style.display = "none";
+        return;
+      }
+      if (filtering) {
+        // 筛选命中：真正移除 .beyond（空 inline display 无法覆盖 CSS 的
+        // .card.beyond{display:none}），隐藏卡片才能显现
+        c.classList.remove("beyond");
+        c.style.display = "";
+      } else if (c.hasAttribute("data-beyond")) {
+        // 无筛选：恢复「加载更多」之前的隐藏状态
+        c.classList.add("beyond");
+        c.style.display = "none";
+      } else {
+        c.style.display = "";
+      }
+      n++; if (!firstVisible) firstVisible = c;
+      var cat = c.getAttribute("data-cat");
+      if (cat) catCounts[cat] = (catCounts[cat] || 0) + 1;
+    });
+    // 更新分类数字：导航 chip 与板块徽标显示「筛选后命中数」，其求和 = 热词 ×N；
+    // 无筛选时恢复各分类总数。导航 chip 命中为 0 时隐藏，避免干扰。
+    document.querySelectorAll("[data-cat][data-total]").forEach(function (el) {
+      var cat = el.getAttribute("data-cat");
+      var total = el.getAttribute("data-total") || "0";
+      var span = el.querySelector(".n") || el;
+      if (filtering) {
+        var v = catCounts[cat] || 0;
+        if (el.classList.contains("chip")) el.style.display = v ? "" : "none";
+        span.textContent = v;
+      } else {
+        if (el.classList.contains("chip")) el.style.display = "";
+        span.textContent = total;
+      }
+    });
+    // 没有可见卡片的分类板块整体隐藏
+    document.querySelectorAll("[data-sec]").forEach(function (sec) {
+      var cards = sec.querySelectorAll(".card[data-src]");
+      var any = Array.prototype.some.call(cards, function (c) {
+        return c.style.display !== "none";
+      });
+      sec.style.display = any ? "" : "none";
+    });
+    var nr = document.getElementById("no-res");
+    if (nr) nr.hidden = n > 0;
+    var cnt = document.getElementById("match-cnt");
+    if (cnt) cnt.textContent = (src || q || kw) ? ("匹配 " + n + " 条") : "";
+    // 筛选后把视口移到第一条命中结果：避免当前板块被隐藏后「以为没筛选」
+    if (filtering && firstVisible) {
+      var r = firstVisible.getBoundingClientRect();
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      if (r.top < 0 || r.top > vh) {
+        firstVisible.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }
+  // 「加载更多」：展开该板块超出封顶、默认隐藏的卡片（移除 beyond 类与标记，永久展开）
+  document.querySelectorAll(".more-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var sec = document.getElementById(btn.getAttribute("data-sec"));
+      if (sec) sec.querySelectorAll(".card.beyond").forEach(function (c) {
+        c.classList.remove("beyond");
+        c.removeAttribute("data-beyond");
+        c.style.display = "";
+      });
+      btn.style.display = "none";
+    });
+  });
+  var sel = document.getElementById("srcsel");
+  if (sel) sel.addEventListener("change", function () {
+    src = sel.value;
+    apply();
+  });
+  var qbox = document.getElementById("q");
+  if (qbox) qbox.addEventListener("input", function () {
+    q = qbox.value.trim().toLowerCase();
+    kw = "";                                   // 手动搜索时清除热词高亮
+    document.querySelectorAll(".chip.kw.active").forEach(function (c) { c.classList.remove("active"); });
+    apply();
+  });
+  // 点击「今日热词」：筛选包含该词的条目，再次点击取消
+  document.querySelectorAll(".chip.kw").forEach(function (chip) {
+    chip.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); chip.click(); }
+    });
+    chip.addEventListener("click", function () {
+      var k = (chip.getAttribute("data-kw") || "").toLowerCase();
+      if (!k) return;
+      if (kw === k) {
+        kw = "";
+        chip.classList.remove("active");
+      } else {
+        kw = k;
+        document.querySelectorAll(".chip.kw.active").forEach(function (c) { c.classList.remove("active"); });
+        chip.classList.add("active");
+      }
+      apply();
+    });
+  });
+  apply();
+})();
+</script>
+
+</body>
+</html>
