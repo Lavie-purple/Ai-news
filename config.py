@@ -43,7 +43,8 @@ CATEGORY_WEIGHT = {"freebie": 2.0}
 CLUSTER_SIMILARITY = 0.60   # 标题归一化后的相似度阈值（0~1，越高越严格）
 
 # ---------- 数据源健康监控 ----------
-SOURCE_FAIL_ALERT_STREAK = 3    # 连续失败达到该天数时在报告页脚告警
+SOURCE_FAIL_ALERT_STREAK = 3    # 连续失败达到该天数时在报告页脚/黄条告警
+SOURCE_ISSUE_STREAK = 2         # 连续失败达到该天数时自动开 GitHub Issue（0=关闭）
 
 # ---------- 周报 ----------
 WEEKLY_WINDOW_DAYS = 7      # 统计窗口

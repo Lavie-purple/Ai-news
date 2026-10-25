@@ -10,6 +10,7 @@ permissions:
   contents: write   # 提交生成的报告与数据库
   pages: write      # 发布 GitHub Pages
   id-token: write
+  issues: write     # 数据源连续失败自动开/关 Issue
 
 concurrency:
   group: github-pages
@@ -40,6 +41,12 @@ jobs:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: ${{ secrets.LLM_MODEL }}
         run: python main.py --once
+
+      - name: 数据源连续失败自动开 Issue（≥2 天）
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python tools/source_issues.py
 
       - name: 提交报告与数据库（保留跨天状态）
         run: |

@@ -270,5 +270,42 @@ class TestAihotTurboStream(unittest.TestCase):
             collector._decode_turbo_stream("<html>没有数据</html>")
 
 
+class TestSourceIssuePlan(unittest.TestCase):
+    """「连续 2 天失败自动开 Issue」的决策逻辑测试。"""
+
+    H = lambda self, name, streak: {"source": name, "fail_streak": streak,
+                                    "last_fail": "2026-10-25", "last_error": "boom"}
+
+    def test_plan_open(self):
+        from tools.source_issues import plan_actions
+        plan = plan_actions([self.H("源A", 2)], [])
+        self.assertEqual(len(plan["open"]), 1)
+        self.assertEqual(plan["open"][0]["source"], "源A")
+
+    def test_plan_noop_below_threshold(self):
+        from tools.source_issues import plan_actions
+        plan = plan_actions([self.H("源A", 1)], [])
+        self.assertEqual(plan, {"open": [], "comment": [], "close": []})
+
+    def test_plan_comment_on_existing_issue(self):
+        from tools.source_issues import plan_actions
+        plan = plan_actions([self.H("源A", 5)],
+                            [{"number": 7, "title": "📡 数据源失败：源A（连续 2 天）"}])
+        self.assertEqual(plan["comment"][0]["issue"], 7)
+        self.assertEqual(plan["open"], [])
+
+    def test_plan_close_on_recovery(self):
+        from tools.source_issues import plan_actions
+        plan = plan_actions([self.H("源A", 0)],
+                            [{"number": 7, "title": "📡 数据源失败：源A（连续 2 天）"}])
+        self.assertEqual(plan["close"][0]["issue"], 7)
+
+    def test_plan_unrelated_issue_ignored(self):
+        from tools.source_issues import plan_actions
+        plan = plan_actions([self.H("源A", 0)],
+                            [{"number": 7, "title": "📡 数据源失败：别的源（连续 2 天）"}])
+        self.assertEqual(plan, {"open": [], "comment": [], "close": []})
+
+
 if __name__ == "__main__":
     unittest.main()
