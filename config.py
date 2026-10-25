@@ -107,8 +107,9 @@ SOURCES = [
      "url": "https://www.bing.com/news/search?q=" +
             urllib.parse.quote("LLM free credits") + "&format=RSS"},
     # 放在最后：该源已做内容提炼与精选，同一 URL 会覆盖前面源的原始摘要
+    # （2026-10 起站点由 aihot.virxact.com 301 迁移至 aihot.news，React Router 7 架构）
     {"name": "AI Hot 每日精选", "type": "aihot", "enabled": True,
-     "url": "https://aihot.virxact.com"},
+     "url": "https://aihot.news/"},
 ]
 
 # GitHub 搜索的主题词（按 star 排序的新建仓库）

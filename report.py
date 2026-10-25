@@ -197,6 +197,12 @@ details.rel li { margin-bottom: 4px; list-style: disc; }
   background: var(--card); border: 1px dashed var(--border); border-radius: 14px;
 }
 
+/* ---------- 源健康黄条：失败源首屏可见 ---------- */
+.health-strip {
+  background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
+  border-radius: 10px; padding: 8px 14px; margin-top: 14px; font-size: 13px;
+}
+
 /* ---------- 美化 4：热词词云悬浮 ---------- */
 .chip.kw:hover { transform: translateY(-1px); }
 .chip.kw:focus-visible { outline-offset: 3px; }
@@ -546,6 +552,13 @@ def build_daily_html(date_str, items, stats, db_total,
     nav = f'<nav class="cats"><div class="container">{chips_row}{toolbar}</div></nav>'
 
     body_parts = [hero, nav]
+
+    # ---- 源健康黄条：失败源在首屏可见（不再只藏在页脚）
+    if source_alerts:
+        names = "、".join(f"{n}（{d}天）" for n, d, _ in source_alerts)
+        body_parts.append(
+            f'<div class="container"><div class="health-strip">📡 数据源健康提醒：'
+            f'{_esc(names)}连续失败，该源内容今日暂缺，其余信源不受影响。</div></div>')
 
     # ---- 今日综述（LLM 生成）或热词兜底
     if brief:

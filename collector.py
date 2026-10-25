@@ -264,10 +264,6 @@ def fetch_rss(name, url, ai_only=False):
 
 
 # ---------------------------------------------------------------- AI Hot 聚合
-_AIHOT_CHUNK_RE = re.compile(
-    r'self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)')
-
-
 def _find_balanced_array(text, start_marker):
     """从 marker 之后的第一个 [ 开始，按括号/字符串平衡找到匹配的 ]，返回子串。
     兼容 RSC flight payload 中可能穿插的转义字符与内嵌对象/数组。"""
@@ -299,54 +295,79 @@ def _find_balanced_array(text, start_marker):
     return None
 
 
-def fetch_aihot(url="https://aihot.virxact.com"):
+_AIHOT_ENQUEUE_RE = re.compile(
+    r'window\.__reactRouterContext\.streamController\.enqueue\("((?:[^"\\]|\\.)*)"\)')
+
+
+def _decode_turbo_stream(html):
+    """解码新版 aihot.news（React Router 7 / turbo-stream）内嵌数据。
+    返回 loaderData 字典；解析失败抛 ValueError。"""
+    m = _AIHOT_ENQUEUE_RE.search(html)
+    if not m:
+        raise ValueError("未找到 turbo-stream 数据")
+    arr = json.loads(json.loads('"' + m.group(1) + '"'))
+
+    def dec(i, seen=frozenset()):
+        if i in seen:
+            return "<cycle>"
+        v = arr[i]
+        if isinstance(v, dict):
+            return {dec(int(k[1:]), seen | {i}) if isinstance(k, str) and k.startswith("_") else k:
+                    dec(vi, seen | {i}) if isinstance(vi, int) else vi
+                    for k, vi in v.items()}
+        if isinstance(v, list):
+            return [dec(x, seen | {i}) if isinstance(x, int) else x for x in v]
+        return v
+
+    return (dec(0) or {}).get("loaderData") or {}
+
+
+def fetch_aihot(url="https://aihot.news/"):
     """
-    抓取 aihot.virxact.com（AI 热点精选聚合站）。
-    该站为 Next.js 服务端渲染，精选条目内嵌在 RSC flight 数据的
-    initialItems 数组中，含中文标题、提炼摘要、AI 标签与站点评分。
+    抓取 AI Hot 精选（https://aihot.news，原 aihot.virxact.com 已 301 迁移）。
+    新版为 React Router 7 SPA，当日 20 条精选卡片内嵌在 turbo-stream 的
+    loaderData['routes/home'].data.cards 中；条目详情路由为 /items/<id>。
     """
     try:
         text = _get(url)
     except Exception as e:
         raise RuntimeError(f"页面请求失败: {e}")
 
-    # 1) 主路径：合并 RSC flight chunks 后按括号平衡提取 initialItems 数组
-    chunks = _AIHOT_CHUNK_RE.findall(text)
-    arr_text = None
-    if chunks:
-        try:
-            payload = "".join(json.loads('"' + c + '"') for c in chunks)
-            arr_text = _find_balanced_array(payload, '"initialItems":')
-        except (json.JSONDecodeError, ValueError):
-            arr_text = None
-    # 2) 兜底：直接在原始 HTML 里找 initialItems（偶有页面只嵌在 <script> 里）
-    if arr_text is None:
-        arr_text = _find_balanced_array(text, '"initialItems":')
-    if not arr_text:
-        raise RuntimeError("页面结构变化：未找到 initialItems")
     try:
-        entries = json.loads(arr_text)
-    except json.JSONDecodeError as e:
-        raise RuntimeError(f"数据解析失败: {e}")
+        loader = _decode_turbo_stream(text)
+        data = (loader.get("routes/home") or {}).get("data") or {}
+        cards = data.get("cards") or []
+    except (ValueError, json.JSONDecodeError, KeyError, TypeError) as e:
+        raise RuntimeError(f"页面结构变化：turbo-stream 解析失败（{e}）")
+    if not cards:
+        raise RuntimeError("页面结构变化：未找到 cards 数据")
 
     items, seen = [], set()
-    for ent in entries:
-        link = (ent.get("url") or "").strip()
-        title = (ent.get("titleZh") or ent.get("title") or "").strip()
-        if not link or not title or link in seen:
+    for card in cards:
+        ent = card.get("item") or {}
+        item_id = (ent.get("id") or "").strip()
+        title = (ent.get("title") or "").strip()
+        if not item_id or not title:
+            continue
+        link = f"https://aihot.news/items/{item_id}"
+        if link in seen:
             continue
         seen.add(link)
         src = ent.get("source") or {}
+        summary = (ent.get("summary") or "").strip()
+        reason = (ent.get("reason") or "").strip()
+        if reason and reason not in summary:
+            summary = f"{summary}（入选理由：{reason}）" if summary else reason
         items.append({
             "title": title,
             "url": link,
-            "summary": (ent.get("summaryZh") or "").strip(),
+            "summary": summary,
             "source": "AI Hot 精选",
             "source_type": "aihot",
-            "metrics": {"site_score": ent.get("finalScore") or 0,
+            "metrics": {"site_score": ent.get("score") or 0,
                         "origin": src.get("name", "")},
             "published_at": _iso(_parse_dt(ent.get("publishedAt"))),
-            "tags": [t.get("tag", "") for t in ent.get("aiTags") or []],
+            "tags": [t for t in (ent.get("tags") or []) if isinstance(t, str)],
         })
     return items
 

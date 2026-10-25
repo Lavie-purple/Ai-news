@@ -5,6 +5,7 @@
   python -m unittest discover -s tests -t .
 """
 
+import json
 import os
 import sys
 import unittest
@@ -228,6 +229,45 @@ class TestIndexCounts(unittest.TestCase):
         finally:
             config.DB_PATH = orig_db
             config.REPORT_DIR = orig_rep
+
+
+class TestAihotTurboStream(unittest.TestCase):
+    """新版 aihot.news（React Router 7 turbo-stream）解码回归测试。"""
+
+    def _make_html(self, loader):
+        # 构造 turbo-stream 扁平数组：{"_N":M} 表示 key=arr[N]、value=arr[M]
+        arr = [
+            {"_1": 2},                     # 0  root -> key at 1, value at 2
+            "loaderData",                  # 1
+            {"_3": 4},                     # 2
+            "routes/home",                 # 3
+            {"_5": 6},                     # 4
+            "data",                        # 5
+            {"_7": 8},                     # 6
+            "cards",                       # 7
+            [13],                          # 8  list 内是索引引用
+            "id",                          # 9
+            "abc123",                      # 10
+            "title",                       # 11
+            "标题X",                       # 12
+            {"_9": 10, "_11": 12},         # 13 card 对象
+        ]
+        inner = json.dumps(arr, ensure_ascii=False)
+        embedded = json.dumps(inner)[1:-1]          # JS 字符串转义形态
+        return f'<html>window.__reactRouterContext.streamController.enqueue("{embedded}")</html>'
+
+    def test_decode_turbo_stream(self):
+        import collector
+        loader = collector._decode_turbo_stream(self._make_html(None))
+        cards = loader["routes/home"]["data"]["cards"]
+        self.assertEqual(len(cards), 1)
+        self.assertEqual(cards[0]["id"], "abc123")
+        self.assertEqual(cards[0]["title"], "标题X")
+
+    def test_decode_turbo_stream_missing(self):
+        import collector
+        with self.assertRaises(ValueError):
+            collector._decode_turbo_stream("<html>没有数据</html>")
 
 
 if __name__ == "__main__":
