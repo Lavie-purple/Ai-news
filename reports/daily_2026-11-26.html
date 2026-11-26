@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>">
+<title>AI 每日精选 · 2026-11-26</title>
+<style>
+:root {
+  --bg: #f3f5f9; --card: #ffffff; --text: #1f2937; --muted: #6b7280;
+  --border: #e5e7eb; --link: #1d4ed8; --chip-bg: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1420; --card: #171e2e; --text: #e5e7eb; --muted: #9ca3af;
+    --border: #2a3447; --link: #8ab4ff; --chip-bg: #171e2e;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  line-height: 1.65; padding-bottom: 60px;
+}
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { max-width: 1000px; margin: 0 auto; padding: 0 22px; }
+
+/* ---------- 头部 ---------- */
+.hero {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #db2777 120%);
+  color: #fff; padding: 44px 0 36px; margin-bottom: 18px;
+}
+.hero h1 { font-size: 30px; letter-spacing: .5px; }
+.hero .sub { opacity: .92; margin-top: 6px; font-size: 15px; }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.stat-chip {
+  background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25);
+  border-radius: 10px; padding: 8px 16px; backdrop-filter: blur(4px);
+}
+.stat-chip b { font-size: 19px; margin-right: 6px; }
+.stat-chip span { font-size: 13px; opacity: .9; }
+
+/* ---------- 分类导航 ---------- */
+nav.cats {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg); padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+/* 分类 chip 行与筛选工具条各占一行（避免工具条遮挡分类 chip）；
+   工具条整体靠右，窄屏自动换行 */
+.chips { display: flex; flex-wrap: nowrap; gap: 7px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 4px; }
+.chips.wrap { flex-wrap: wrap; overflow: visible; }   /* 今日热词：换行完整显示，不被裁切 */
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--chip-bg); border: 1px solid var(--border);
+  border-radius: 999px; padding: 5px 12px; font-size: 13px; color: var(--text);
+  white-space: nowrap; flex-shrink: 0;
+}
+.chip:hover { text-decoration: none; border-color: #6366f1; }
+.chip .n { color: var(--muted); font-size: 12px; }
+.chip.kw { cursor: pointer; }
+.chip.kw:hover { border-color: #6366f1; color: #6366f1; }
+.chip.kw.active { background: #6366f1; border-color: #6366f1; color: #fff; }
+.chip.kw.active .n { color: #fff; }
+
+/* ---------- 板块 ---------- */
+section { margin-top: 34px; scroll-margin-top: 130px; }
+.sec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; cursor: pointer; user-select: none; }
+.sec-head h2 { font-size: 21px; transition: color .15s ease; }
+.sec-head:hover h2 { color: var(--link); }
+.sec-head .toggle { font-size: 13px; color: var(--muted); transition: transform .15s ease; flex: none; }
+section.collapsed .sec-head .toggle { transform: rotate(-90deg); }
+section.collapsed .sec-head { margin-bottom: 0; }
+section.collapsed > .container > *:not(.sec-head) { display: none; }
+.sec-badge {
+  font-size: 12.5px; color: #fff; border-radius: 999px; padding: 2px 11px;
+}
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 18px; margin-bottom: 10px; transition: box-shadow .15s ease, transform .15s ease;
+}
+.card:hover { box-shadow: 0 6px 22px rgba(30,41,59,.12); transform: translateY(-1px); }
+/* 超出封顶、默认隐藏的卡片：点「加载更多」移除 .beyond 后展开 */
+.card.beyond { display: none; }
+.more-btn {
+  display: block; margin: 6px auto 14px; padding: 8px 18px; cursor: pointer;
+  font-size: 13.5px; color: var(--link); background: var(--chip-bg);
+  border: 1px solid var(--border); border-radius: 20px;
+}
+.more-btn:hover { border-color: var(--link); }
+.card .title { font-size: 16.5px; font-weight: 600; }
+.card .title a { color: var(--text); }
+.card .title a:hover { color: var(--link); }
+.card p.sum { color: var(--muted); font-size: 14px; margin-top: 6px; }
+/* 亮点面板：一句话说明模型/智能体优势（不复述下载数，避免与 meta 重复） */
+.hl-box { margin: 9px 0 2px; font-size: 13px; line-height: 1.6; color: var(--text);
+          background: var(--bg); border: 1px solid var(--border);
+          border-left: 3px solid var(--cat, var(--link));
+          border-radius: 8px; padding: 6px 12px; }
+.hl-box .hl-tag { color: var(--cat, var(--link)); font-weight: 700; margin-right: 7px; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px;
+        font-size: 12.5px; color: var(--muted); }
+.tag { color: #fff; border-radius: 6px; padding: 1px 9px; font-size: 12px; }
+.score-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+.bar { width: 64px; height: 5px; border-radius: 99px; background: var(--border); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 99px;
+         background: linear-gradient(90deg,#f97316,#ef4444); }
+.score-num { color: #ef4444; font-weight: 700; }
+
+/* ---------- 精选区 ---------- */
+.top-item { display: flex; gap: 16px; }
+.rank {
+  flex: none; width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 17px; color: #fff;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+.rank.r2 { background: linear-gradient(135deg, #64748b, #94a3b8); }
+.rank.r3 { background: linear-gradient(135deg, #b45309, #d97706); }
+
+.note { color: var(--muted); font-size: 12.5px; margin: 4px 0 10px 2px; }
+footer { margin-top: 48px; text-align: center; color: var(--muted); font-size: 12.5px; }
+footer hr { border: none; border-top: 1px solid var(--border); margin-bottom: 14px; }
+
+/* ---------- 报告索引页 ---------- */
+.index-card { background: var(--card); border: 1px solid var(--border);
+              border-radius: 12px; padding: 14px 20px; margin-bottom: 10px;
+              display: flex; justify-content: space-between; align-items: center; }
+
+/* ---------- 今日综述 / 热词 ---------- */
+.brief-card { border-left: 4px solid #7c3aed; }
+.brief-card p.body { margin-top: 10px; font-size: 14.5px; }
+
+/* ---------- 相关报道折叠块 ---------- */
+details.rel { margin-top: 8px; font-size: 13px; color: var(--muted); }
+details.rel summary { cursor: pointer; user-select: none; }
+details.rel ul { margin: 6px 0 2px 18px; }
+details.rel li { margin-bottom: 4px; list-style: disc; }
+
+.meta .gain { color: #f59e0b; font-weight: 600; }
+.srclink { color: var(--muted); text-decoration: none; }
+.srclink:hover { color: var(--link); text-decoration: underline; }
+
+/* ---------- 工具栏：信源下拉筛选 / 关键词搜索 ---------- */
+.toolbar { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 10px; padding: 8px 0 4px; flex: 0 0 100%; }
+.sel, .qbox { flex: none; border: 1px solid var(--border); border-radius: 10px;
+        background: var(--chip-bg); color: var(--text); padding: 6px 10px; font-size: 13px;
+        font-family: inherit; outline: none; max-width: 240px; }
+.qbox { width: 224px; flex: 1 1 224px; }
+.sel:focus, .qbox:focus { border-color: #6366f1; }
+#match-cnt { color: var(--muted); font-size: 12.5px; flex: none; }
+
+/* ---------- 周报 ---------- */
+.bars { display: flex; align-items: flex-end; gap: 10px; height: 130px;
+        padding: 10px 4px 0; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center;
+           gap: 6px; height: 100%; justify-content: flex-end; }
+.bar-col i { display: block; width: 70%; max-width: 46px;
+             background: linear-gradient(180deg,#6366f1,#8b5cf6);
+             border-radius: 6px 6px 0 0; }
+.bar-col .lbl { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.bar-col b { font-size: 12px; }
+.wrow { display: flex; align-items: center; gap: 12px; padding: 9px 4px;
+        border-bottom: 1px solid var(--border); font-size: 14px; }
+.wrow:last-child { border-bottom: none; }
+.wrow .rk { width: 26px; text-align: center; font-weight: 700;
+            color: var(--muted); flex: none; }
+.wrow .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+           white-space: nowrap; }
+.wrow .sc { flex: none; color: #ef4444; font-weight: 700; font-size: 13px; }
+
+/* ---------- 美化 1：卡片分类色条 + 悬浮高亮 ---------- */
+.card { position: relative; overflow: hidden; }
+.card::before {
+  content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 4px;
+  border-radius: 0 4px 4px 0; background: var(--cat, var(--border)); opacity: .8;
+  transition: opacity .15s ease, box-shadow .15s ease;
+}
+.card:hover { border-color: var(--cat, var(--border)); }
+.card:hover::before { opacity: 1; box-shadow: 0 0 10px var(--cat, var(--border)); }
+
+/* ---------- 美化 6：渐变标题 ---------- */
+.hero h1 {
+  background: linear-gradient(90deg, #ffffff 0%, #dbeafe 52%, #fbcfe8 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ---------- 美化 5：空状态 ---------- */
+#no-res {
+  margin: 26px auto; max-width: 540px;
+  background: var(--card); border: 1px dashed var(--border); border-radius: 14px;
+}
+
+/* ---------- 源健康黄条：失败源首屏可见 ---------- */
+.health-strip {
+  background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
+  border-radius: 10px; padding: 8px 14px; margin-top: 14px; font-size: 13px;
+}
+
+/* ---------- 美化 4：热词词云悬浮 ---------- */
+.chip.kw:hover { transform: translateY(-1px); }
+.chip.kw:focus-visible { outline-offset: 3px; }
+
+/* ---------- 美化 7：响应式 + 无障碍 ---------- */
+:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; border-radius: 6px; }
+@media (max-width: 640px) {
+  .hero { padding: 30px 0 24px; }
+  .hero h1 { font-size: 22px; }
+  .card { padding: 12px 14px; }
+  .sec-head h2 { font-size: 18px; }
+  .toolbar { gap: 6px 8px; }
+  .sel { flex: 1 1 auto; }
+  .qbox { width: 100%; flex: 1 1 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+  <div class="hero"><div class="container">
+    <h1>🛰️ AI 项目情报站 · 每日精选</h1>
+    <div class="sub">2026-11-26 星期四 ｜ 自动抓取国内外大模型与 AI 项目动态</div>
+    <div class="stats">
+      <div class="stat-chip"><b>72</b><span>今日收录</span></div>
+      <div class="stat-chip"><b>7</b><span>涉及分类</span></div>
+      <div class="stat-chip"><b>8</b><span>数据源</span></div>
+      <div class="stat-chip"><b>8</b><span>今日精选</span></div>
+      
+    </div>
+  </div></div><nav class="cats"><div class="container"><div class="chips wrap"><a class="chip" href="#cat-foundation" data-cat="foundation" data-total="18">🧠 大模型发布 <span class="n">18</span></a><a class="chip" href="#cat-multimodal" data-cat="multimodal" data-total="2">🎨 多模态生成 <span class="n">2</span></a><a class="chip" href="#cat-agents" data-cat="agents" data-total="6">🤖 智能体与应用 <span class="n">6</span></a><a class="chip" href="#cat-opensource" data-cat="opensource" data-total="11">🛠️ 开源项目与工具 <span class="n">11</span></a><a class="chip" href="#cat-industry" data-cat="industry" data-total="30">📈 行业动态 <span class="n">30</span></a><a class="chip" href="#cat-research" data-cat="research" data-total="4">🔬 研究前沿 <span class="n">4</span></a><a class="chip" href="#cat-policy" data-cat="policy" data-total="1">⚖️ 政策与安全 <span class="n">1</span></a></div>
+<div class="toolbar">
+  <select id="srcsel" class="sel" title="按信源筛选"><option value="">📡 全部信源</option><option value="IT之家">IT之家（15）</option><option value="AI Hot 精选">AI Hot 精选（14）</option><option value="量子位">量子位（10）</option><option value="GitHub">GitHub（9）</option><option value="TechCrunch AI">TechCrunch AI（9）</option><option value="HuggingFace">HuggingFace（8）</option><option value="The Verge AI">The Verge AI（5）</option><option value="爱范儿">爱范儿（2）</option></select>
+  <input id="q" class="qbox" type="search" placeholder="🔍 搜索标题 / 摘要">
+  <span id="match-cnt"></span>
+</div></div></nav><div class="container"><div class="health-strip">📡 数据源健康提醒：Reddit 免费线报（18天）连续失败，该源内容今日暂缺，其余信源不受影响。</div></div>
+  <section id="hotwords"><div class="container">
+    <div class="sec-head"><span class="toggle">▾</span><h2>🔥 今日热词</h2><div class="sec-line"></div></div>
+    <div class="chips wrap"><span class="chip kw" data-kw="Claude-Session" tabindex="0" role="button" aria-label="筛选包含 Claude-Session 的条目" title="点击筛选包含「Claude-Session」的条目">Claude-Session <span class="n">×1</span></span></div>
+  </div></section><section id="top" data-sec><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🔥 今日精选 TOP8</h2><div class="sec-line"></div></div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="HuggingFace" data-text="krafton/raon-1-mini 任务类型: 文本生成 · 近30天下载 264 · 👍 122zh-cnzh-cn">
+        <div class="top-item">
+          <div class="rank">1</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://huggingface.co/KRAFTON/Raon-1-mini" target="_blank" rel="noopener">KRAFTON/Raon-1-mini</a></div>
+            <p class="sum">任务类型: 文本生成</p>
+            
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://huggingface.co/KRAFTON/Raon-1-mini" target="_blank" rel="noopener">📡 HuggingFace</a>
+              
+              <span>⬇ 264 近30天 · 👍 122</span>
+              <span class="score-wrap"><span class="bar"><i style="width:57%"></i></span><span class="score-num">57</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#f59e0b" data-cat="multimodal" data-src="HuggingFace" data-text="nvidia/nemotron-labs-image-30b-a3b 任务类型: 文生图 · 近30天下载 218 · 👍 197zh-cnzh-cn">
+        <div class="top-item">
+          <div class="rank r2">2</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://huggingface.co/nvidia/Nemotron-Labs-Image-30B-A3B" target="_blank" rel="noopener">nvidia/Nemotron-Labs-Image-30B-A3B</a></div>
+            <p class="sum">任务类型: 文生图</p>
+            <div class="hl-box"><span class="hl-tag">💡 优势</span>30B 参数</div>
+            <div class="meta">
+              <span class="tag" style="background:#f59e0b">🎨 多模态生成</span>
+              <a class="srclink" href="https://huggingface.co/nvidia/Nemotron-Labs-Image-30B-A3B" target="_blank" rel="noopener">📡 HuggingFace</a>
+              
+              <span>⬇ 218 近30天 · 👍 197</span>
+              <span class="score-wrap"><span class="bar"><i style="width:54%"></i></span><span class="score-num">54</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="HuggingFace" data-text="llamaindex/ocria-1 任务类型: 图文到文本 · 近30天下载 419 · 👍 103zh-cnzh-cn">
+        <div class="top-item">
+          <div class="rank r3">3</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://huggingface.co/llamaindex/OCRia-1" target="_blank" rel="noopener">llamaindex/OCRia-1</a></div>
+            <p class="sum">任务类型: 图文到文本</p>
+            <div class="hl-box"><span class="hl-tag">💡 优势</span>图文多模态理解</div>
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://huggingface.co/llamaindex/OCRia-1" target="_blank" rel="noopener">📡 HuggingFace</a>
+              
+              <span>⬇ 419 近30天 · 👍 103</span>
+              <span class="score-wrap"><span class="bar"><i style="width:54%"></i></span><span class="score-num">54</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="GitHub" data-text="alesha-pro/llm.asm qwen3-0.6b 推理 (12 kb)、裸机可启动操作系统 (22 kb) 以及带有实时盲文 tui (32 kb) 的从头开始的 mini-gpt 训练器，采用 100% 纯 x86-64 nasm 组件。零 c、零 libc、零依赖。en">
+        <div class="top-item">
+          <div class="rank r3">4</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://github.com/alesha-pro/llm.asm" target="_blank" rel="noopener">alesha-pro/llm.asm</a></div>
+            <p class="sum">Qwen3-0.6B 推理 (12 KB)、裸机可启动操作系统 (22 KB) 以及带有实时盲文 TUI (32 KB) 的从头开始的 Mini-GPT 训练器，采用 100% 纯 x86-64 NASM 组件。零 C、零 libc、零依赖。en</p>
+            <div class="hl-box"><span class="hl-tag">💡 优势</span>0.6B 参数</div>
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://github.com/alesha-pro/llm.asm" target="_blank" rel="noopener">📡 GitHub</a>
+              
+              <span>⭐ 664</span>
+              <span class="score-wrap"><span class="bar"><i style="width:53%"></i></span><span class="score-num">53</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="GitHub" data-text="tdupuis19341/claude-session-rotator claude code unlimited — claude-code 和 llm 合二为一。enzh-cn">
+        <div class="top-item">
+          <div class="rank r3">5</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://github.com/tDupuis19341/claude-session-rotator" target="_blank" rel="noopener">tDupuis19341/claude-session-rotator</a></div>
+            <p class="sum">Claude Code Unlimited — claude-code 和 llm 合二为一。enzh-CN</p>
+            
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://github.com/tDupuis19341/claude-session-rotator" target="_blank" rel="noopener">📡 GitHub</a>
+              
+              <span>⭐ 66</span>
+              <span class="score-wrap"><span class="bar"><i style="width:48%"></i></span><span class="score-num">48</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="GitHub" data-text="yukicatalano8591/llm-fallback-router llm-router-free — 路由器和后备工具合二为一。enzh-cn">
+        <div class="top-item">
+          <div class="rank r3">6</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://github.com/YukiCatalano8591/llm-fallback-router" target="_blank" rel="noopener">YukiCatalano8591/llm-fallback-router</a></div>
+            <p class="sum">llm-router-free — 路由器和后备工具合二为一。enzh-CN</p>
+            
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://github.com/YukiCatalano8591/llm-fallback-router" target="_blank" rel="noopener">📡 GitHub</a>
+              
+              <span>⭐ 59</span>
+              <span class="score-wrap"><span class="bar"><i style="width:48%"></i></span><span class="score-num">48</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="GitHub" data-text="matheusmongarde/garimpo 从 google 地图到 pix 的开源勘探：在地图上查找商家，生成包含每个人姓名的预览网站，在 whatsapp 上聊天，并通过 pix、mercado pago 或 stripe 收费。付费了，自己关闭。在您的 pc、vps 或 vercel 上运行，带有代理 api（claude code、codex、n8n）。ptzh-cn">
+        <div class="top-item">
+          <div class="rank r3">7</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://github.com/matheusmongarde/garimpo" target="_blank" rel="noopener">matheusmongarde/garimpo</a></div>
+            <p class="sum">从 Google 地图到 Pix 的开源勘探：在地图上查找商家，生成包含每个人姓名的预览网站，在 WhatsApp 上聊天，并通过 Pix、Mercado Pago 或 Stripe 收费。付费了，自己关闭。在您的 PC、VPS 或 Vercel 上运行，带有代理 API（Claude Code、Codex、n8n）。ptzh-CN</p>
+            <div class="hl-box"><span class="hl-tag">💡 优势</span>开源项目</div>
+            <div class="meta">
+              <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+              <a class="srclink" href="https://github.com/matheusmongarde/garimpo" target="_blank" rel="noopener">📡 GitHub</a>
+              
+              <span>⭐ 189</span>
+              <span class="score-wrap"><span class="bar"><i style="width:48%"></i></span><span class="score-num">48</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="GitHub" data-text="sthamann/awesome-agentic-commerce 每日策划和更新：代理商务协议（ucp、acp、ap2、mcp、x402）、sdk、支付提供商、开源实现和最新新闻。en">
+        <div class="top-item">
+          <div class="rank r3">8</div>
+          <div style="flex:1">
+            <div class="title"><a href="https://github.com/sthamann/awesome-agentic-commerce" target="_blank" rel="noopener">sthamann/awesome-agentic-commerce</a></div>
+            <p class="sum">每日策划和更新：代理商务协议（UCP、ACP、AP2、MCP、x402）、SDK、支付提供商、开源实现和最新新闻。en</p>
+            <div class="hl-box"><span class="hl-tag">💡 优势</span>开源项目</div>
+            <div class="meta">
+              <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+              <a class="srclink" href="https://github.com/sthamann/awesome-agentic-commerce" target="_blank" rel="noopener">📡 GitHub</a>
+              
+              <span>⭐ 132</span>
+              <span class="score-wrap"><span class="bar"><i style="width:46%"></i></span><span class="score-num">46</span></span>
+            </div>
+            
+          </div>
+        </div>
+      </div></div></section><section id="cat-foundation" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🧠 大模型发布</h2><span class="sec-badge" style="background:#6366f1" data-cat="foundation" data-total="12">12</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="AI Hot 精选" data-text="人为的。co 务实工程师 katelyn lesse çæå®‚is®¿is°ï¼å¥1åcentisis ́èå claude api å claude code å claude desktop 什么是 anthropic 是 ®⁄æ1⁄2ãa²( 劳动力:is®¿is°æ«é²äº anthropic 是 ®ù ̈ claude oncall 什么 è°æ ́èaå·±åœçå·¥çěå®è·µãª⁄)lijzh-cn">
+      <div class="title">🔗 <a href="https://aihot.news/items/rnanzlnaqxdr2icjqw0qwv9la" target="_blank" rel="noopener">人为的。co</a></div>
+      <p class="sum">务实工程师 Katelyn Lesse çæå®‚is®¿is°ï¼å¥1åcentisis ́èå Claude API å Claude Code å Claude Desktop 什么是 Anthropic 是 ®⁄æ1⁄2ãa²( 劳动力:is®¿is°æ«é²äº Anthropic 是 ®ù ̈ Claude oncall 什么 è°æ ́èaå·±åœçå·¥çěå®è·µãª⁄)lijzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://aihot.news/items/rnanzlnaqxdr2icjqw0qwv9la" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Pragmatic Engineer</span>
+        <span>🕐 11-25 17:31</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:42%"></i></span><span class="score-num">42</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="AI Hot 精选" data-text="å¡å¹åæãäººçæä¹è®¾è®¡è¯¾ãåæai promptï¼å¸®ä½ è®¾è®¡äººççæä¹ å ¬ä¼å·ä½è å¡å ¹å å°æ¯å¦ç¦ãäººçæä¹è®¾è®¡è¯¾ãæ°ä¹¦çæ ¸å¿æ¹æ³æ¹ç¼æä¸ä¸ªå¤è½®å¯¹è¯promptï¼éè¿åä¸ªé¶æ®µ6å°9ä¸ªé®é¢ï¼æç»çæä¸ä»½5000å°…">
+      <div class="title">🔗 <a href="https://aihot.news/items/mruv0rx3oxnkjy9ll805qaidc" target="_blank" rel="noopener">å¡å¹åæãäººçæä¹è®¾è®¡è¯¾ãåæAI Promptï¼å¸®ä½ è®¾è®¡äººççæä¹</a></div>
+      <p class="sum">å ¬ä¼å·ä½è å¡å ¹å å°æ¯å¦ç¦ãäººçæä¹è®¾è®¡è¯¾ãæ°ä¹¦çæ ¸å¿æ¹æ³æ¹ç¼æä¸ä¸ªå¤è½®å¯¹è¯Promptï¼éè¿åä¸ªé¶æ®µ6å°9ä¸ªé®é¢ï¼æç»çæä¸ä»½5000å°…</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://aihot.news/items/mruv0rx3oxnkjy9ll805qaidc" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ å¬ä¼å·ï¼æ°å­çå½å¡å¹å</span>
+        <span>🕐 11-25 23:56</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:41%"></i></span><span class="score-num">41</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="AI Hot 精选" data-text="pydantic ai 代理 pax agent harness 安全带 1.0ro pydantic ai harness sdk agent pax pydantic-ai-pax 1 ¥åççæä»¶ï⁄æyæ --agent æ¥å¥è§ªsand®ãydantic ai¡箊agent p 蜽朿harness-bench swe81 swe81 ä oxcodeã code co åæ°åææª̩̩̩̩̩̩̩̤̤̩̩̩̂¼°è¿1æ¸¸¸¸¸¸¸opencode̩codex̊claude ̶̶̶̶̶̶̲̩̩̩̩̩̩̩̩̩̩̲̲̣̣̣̣̣̣̣2lijlij">
+      <div class="title">🔗 <a href="https://aihot.news/items/i5qr52169dlque8rb2sl4i5jo" target="_blank" rel="noopener">Pydantic AI 代理 Pax Agent Harness 安全带 1.0ro</a></div>
+      <p class="sum">Pydantic AI Harness SDK Agent Pax pydantic-ai-pax 1 ¥åççæä»¶ï⁄æyæ --agent æ¥å¥è§ªsand®ãydantic AI¡箊Agent P 蜽朿Harness-Bench SWE81 SWE81 ä OxCodeã Code Co åæ°åææª̩̩̩̩̩̩̩̤̤̩̩̩̂¼°è¿1æ¸¸¸¸¸¸¸OpenCode̩Codex̊Claude ̶̶̶̶̶̶̲̩̩̩̩̩̩̩̩̩̩̲̲̣̣̣̣̣̣̣2lijlij</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://aihot.news/items/i5qr52169dlque8rb2sl4i5jo" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Pydantic AI å®æ¹æç« </span>
+        <span>🕐 11-25 09:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:41%"></i></span><span class="score-num">41</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="AI Hot 精选" data-text="ä¸ä¸ææ¼ç§»å¦ä½å½±åä½ ç ai agentï¼470 é¡¹å®éªä¸ä¸ä¸ªåè´¹ç mcp è§£æ³ google ai å¤åè½ patrick kelly éè¿ 470 ä ̧ªä»»å¡å®æµå°å context rot ä ̧ contextdriftï¼åå¡ gemini.8 gemini çæ2çoä ̧åç°ï1⁄4æ ̈¡åå¡ 73% 什么是 0% ä1⁄4ä ̧»噗噗噗噗噗1⁄495%-100%噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗̧æèçª©§æ¼²§§» ï1⁄4å1¶ç»åºé¶ææ¤ǻ¤ç´çå²çaaä¸æ¥å·¥å·æ¤ælijzh-cn">
+      <div class="title">🔗 <a href="https://aihot.news/items/br6usy3mxv1q0mzxhgf9y8qam" target="_blank" rel="noopener">ä¸ä¸ææ¼ç§»å¦ä½å½±åä½ ç AI Agentï¼470 é¡¹å®éªä¸ä¸ä¸ªåè´¹ç MCP è§£æ³</a></div>
+      <p class="sum">Google AI å¤åè½ Patrick Kelly éè¿ 470 ä ̧ªä»»å¡å®æµå°å context rot ä ̧ contextdriftï¼åå¡ Gemini.8 Gemini çæ2çoä ̧åç°ï1⁄4æ ̈¡åå¡ 73% 什么是 0% ä1⁄4ä ̧»噗噗噗噗噗1⁄495%-100%噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗噗̧æèçª©§æ¼²§§» ï1⁄4å1¶ç»åºé¶ææ¤ǻ¤ç´çå²çaaä¸æ¥å·¥å·æ¤ælijzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://aihot.news/items/br6usy3mxv1q0mzxhgf9y8qam" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Google AIï¼DEV ä½èä¸å±</span>
+        <span>🕐 11-25 16:19</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:41%"></i></span><span class="score-num">41</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="AI Hot 精选" data-text="é¢å£æºè½ç­åå¸ evil åºåï¼æµåº gpt-4o ç­æ¨¡åå¨è¿æ³åºæ¯ä¸å®å¨çä¸è¶³ é¡¡¡è¡¡openbmb¡“¡“¡nature communications¡©¶¶ï¡¡¡¡¡¶“ - 60% 60% ... dpo dpocolij">
+      <div class="title">🔗 <a href="https://aihot.news/items/ogucsvlqrdr1rvfh5nvx757cx" target="_blank" rel="noopener">é¢å£æºè½ç­åå¸ EVIL åºåï¼æµåº GPT-4o ç­æ¨¡åå¨è¿æ³åºæ¯ä¸å®å¨çä¸è¶³</a></div>
+      <p class="sum">é¡¡¡è¡¡OpenBMB¡“¡“¡Nature Communications¡©¶¶ï¡¡¡¡¡¶“ - 60% 60% ... DPO DPOcolij</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://aihot.news/items/ogucsvlqrdr1rvfh5nvx757cx" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ é¢å£æºè½ OpenBMB</span>
+        <span>🕐 11-25 13:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:40%"></i></span><span class="score-num">40</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="AI Hot 精选" data-text="hy4 flash ä¸çº¿ fireworks 无服务器en èˆ˅¤è®́ზ˖°å¿ⴠæºზᐆæ¡¡åტურ hy4 flash çრ°å·²å¡ fireworks 无服务器 ä¸å̀çě¸¸å̀çě¸¸¸ǻçě¸¸¸ǻçě¸¸¸ฃคä¸º moe æ¶æคïæ»å°çº 220bãეⴠტⴡǣⴣღ 代币 æ¿ⴣကæ´»çºп 12bï⁄ⴣ1m 代币ä¸აⴣამამარამარარავამებილი 512kï¼─────────────────────────────────────── å ¥ä½ คคบä¸ªä¸คคä¸ฃตåคคºåคคฆä¸คคçคคå คåคจคฆä¸คคคจคคยคผ�ยคผ�ดคคคคคคค åคถ´æคค®æ¤èคä¼°å®คฃåค¡ä¸ฃä¸ฃä»»åค¡ä¸çบคæค§ä»·æ´คåคถèถจãฃ)co">
+      <div class="title">🔗 <a href="https://aihot.news/items/dvu6olan4q58k1evvnp8t60t2" target="_blank" rel="noopener">Hy4 Flash ä¸çº¿ Fireworks 无服务器en</a></div>
+      <p class="sum">èˆ˅¤è®́ზ˖°å¿Ⴠæºზᐆæ¡¡åტურ Hy4 Flash çრ°å·²å¡ Fireworks 无服务器 ä¸å̀çě¸¸å̀çě¸¸¸ǻçě¸¸¸ǻçě¸¸¸ฃคä¸º MoE æ¶æคïæ»å°çº 220BãეჀტჁǣჃღ 代币 æ¿Ⴣကæ´»çºп 12Bï⁄Ⴣ1M 代币ä¸აჃამამარამარარავამებილი 512Kï¼─────────────────────────────────────── å ¥ä½ คคบä¸ªä¸คคä¸ฃตåคคºåคคฆä¸คคçคคå คåคจคฆä¸คคคจคคยคผ�ยคผ�ดคคคคคคค åคถ´æคค®æ¤èคä¼°å®คฃåค¡ä¸ฃä¸ฃä»»åค¡ä¸çบคæค§ä»·æ´คåคถèถจãฃ)co</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://aihot.news/items/dvu6olan4q58k1evvnp8t60t2" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Fireworks AI</span>
+        <span>🕐 11-24 16:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:36%"></i></span><span class="score-num">36</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="GitHub" data-text="joejiang-927117/zhixuagentic-knowledge-base 删除杂乱的 pdf/office/md 文件夹 → 可审核的本地 markdown wiki + git 历史记录 + 接地气的问答。零 docker/es、ollama-ready、zh/en、apache-2.0enzh-cn">
+      <div class="title">🔗 <a href="https://github.com/JoeJiang-927117/ZHIXUAgentic-Knowledge-Base" target="_blank" rel="noopener">JoeJiang-927117/ZHIXUAgentic-Knowledge-Base</a></div>
+      <p class="sum">删除杂乱的 PDF/Office/MD 文件夹 → 可审核的本地 Markdown Wiki + Git 历史记录 + 接地气的问答。零 Docker/ES、Ollama-ready、ZH/EN、Apache-2.0enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://github.com/JoeJiang-927117/ZHIXUAgentic-Knowledge-Base" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 11-19 07:11</span>
+        <span>⭐ 7</span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="IT之家" data-text="epic ceo 斯威尼怒喷 claude 是垃圾：误判正常研究为模型蒸馏 it之家 11 月 26 日消息，epic games 首席执行官蒂姆 · 斯威尼（tim sweeney）本周在 x 上把 anthropic 的 claude 称为“垃圾”，起因是这个模型中断了一场关于编程与集合论的研究会话，并指控他在做“蒸馏”。 it之家注意到，斯威尼写道：“它就是垃圾，拦住我做的一些集合论工作，还指控我在搞蒸馏。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/822.htm" target="_blank" rel="noopener">Epic CEO 斯威尼怒喷 Claude 是垃圾：误判正常研究为模型蒸馏</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，Epic Games 首席执行官蒂姆 · 斯威尼（Tim Sweeney）本周在 X 上把 Anthropic 的 Claude 称为“垃圾”，起因是这个模型中断了一场关于编程与集合论的研究会话，并指控他在做“蒸馏”。 IT之家注意到，斯威尼写道：“它就是垃圾，拦住我做的一些集合论工作，还指控我在搞蒸馏。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/822.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 07:21</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="IT之家" data-text="腾讯被曝全公司推混元 hy4 模型，12 月起非技术岗外部模型额度降至 10% it之家 11 月 26 日消息，据“大厂日爆”公众号今日爆料，鹅厂（预计指腾讯）将在全公司范围内大面积推广混元 hy4 模型。 据爆料，从 12 月 1 日起， 腾讯产品运营等非 t 族（it之家注：技术研发）岗位的外部模型额度调为 10% ，比如默认总额度 700，外部可以用 70，hy4 用 630。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/781.htm" target="_blank" rel="noopener">腾讯被曝全公司推混元 HY4 模型，12 月起非技术岗外部模型额度降至 10%</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，据“大厂日爆”公众号今日爆料，鹅厂（预计指腾讯）将在全公司范围内大面积推广混元 HY4 模型。 据爆料，从 12 月 1 日起， 腾讯产品运营等非 T 族（IT之家注：技术研发）岗位的外部模型额度调为 10% ，比如默认总额度 700，外部可以用 70，HY4 用 630。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/781.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 07:01</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="IT之家" data-text="宇树王兴兴：openai 并未放弃机器人而是技术收敛，物理 ai 底层没有跨不过的门槛 it之家 11 月 26 日消息，据澎湃新闻今天报道，宇树科技创始人、董事长王兴兴近日在 wise2026 大会表示，openai 机器人团队是合并而非撤销，说明其找到了更确定的技术方向。 it之家从原报道获悉，王兴兴认为 openai 合并机器人实验室反而是好事，或者说 openai 内部看到了确定性的方向。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/762.htm" target="_blank" rel="noopener">宇树王兴兴：OpenAI 并未放弃机器人而是技术收敛，物理 AI 底层没有跨不过的门槛</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，据澎湃新闻今天报道，宇树科技创始人、董事长王兴兴近日在 WISE2026 大会表示，OpenAI 机器人团队是合并而非撤销，说明其找到了更确定的技术方向。 IT之家从原报道获悉，王兴兴认为 OpenAI 合并机器人实验室反而是好事，或者说 OpenAI 内部看到了确定性的方向。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/762.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 06:27</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="IT之家" data-text="减少错别字：canto-2 语音 ai 模型发布，让你的语音输入“零修改”直出 it之家 11 月 26 日消息，ai 语音听写应用 wispr flow 本周推出全新语音转文本模型 canto-2， 面向 mac、windows、ios 及 android 等平台用户，旨在减少听写错误，并显著提升对专有人名、技术术语及复杂表达的理解能力。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/752.htm" target="_blank" rel="noopener">减少错别字：Canto-2 语音 AI 模型发布，让你的语音输入“零修改”直出</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，AI 语音听写应用 Wispr Flow 本周推出全新语音转文本模型 Canto-2， 面向 Mac、Windows、iOS 及 Android 等平台用户，旨在减少听写错误，并显著提升对专有人名、技术术语及复杂表达的理解能力。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/752.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 06:06</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#6366f1" data-cat="foundation" data-src="TechCrunch AI" data-text="openai 表示，随着 chat 和 work 的合并，chatgpt 的大量用户可能会更快达到极限en openai 将在 chatgpt 中引入单一使用计量表，因为它结合了聊天和工作体验。en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/11/25/openai-says-heavy-chatgpt-users-may-hit-limits-sooner-as-it-merges-chat-and-work/" target="_blank" rel="noopener">OpenAI 表示，随着 Chat 和 Work 的合并，ChatGPT 的大量用户可能会更快达到极限en</a></div>
+      <p class="sum">OpenAI 将在 ChatGPT 中引入单一使用计量表，因为它结合了聊天和工作体验。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#6366f1">🧠 大模型发布</span>
+        <a class="srclink" href="https://techcrunch.com/2026/11/25/openai-says-heavy-chatgpt-users-may-hit-limits-sooner-as-it-merges-chat-and-work/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 20:03</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-multimodal" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🎨 多模态生成</h2><span class="sec-badge" style="background:#f59e0b" data-cat="multimodal" data-total="1">1</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#f59e0b" data-cat="multimodal" data-src="HuggingFace" data-text="sand-ai/magi-2-preview 任务类型: image-文生视频 · 👍 229zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://huggingface.co/sand-ai/MAGI-2-preview" target="_blank" rel="noopener">sand-ai/MAGI-2-preview</a></div>
+      <p class="sum">任务类型: image-文生视频 · 👍 229zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#f59e0b">🎨 多模态生成</span>
+        <a class="srclink" href="https://huggingface.co/sand-ai/MAGI-2-preview" target="_blank" rel="noopener">📡 HuggingFace</a>
+        
+        <span>🕐 08-03 12:34</span>
+        <span>👍 229</span>
+        <span class="score-wrap"><span class="bar"><i style="width:38%"></i></span><span class="score-num">38</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-agents" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🤖 智能体与应用</h2><span class="sec-badge" style="background:#10b981" data-cat="agents" data-total="6">6</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="GitHub" data-text="langchain-samples/persistent-agent 持久代理是一个主动、始终在线、以目标为导向的代理。想想 muse 或 instinct，但适用于企业。配备内存、浏览器使用、数百种工具和主动剧本，它可以在后台运行，以减轻您的工作负担。基于托管深度代理 (mda) 构建。en">
+      <div class="title">🔗 <a href="https://github.com/langchain-samples/Persistent-Agent" target="_blank" rel="noopener">langchain-samples/Persistent-Agent</a></div>
+      <p class="sum">持久代理是一个主动、始终在线、以目标为导向的代理。想想 Muse 或 Instinct，但适用于企业。配备内存、浏览器使用、数百种工具和主动剧本，它可以在后台运行，以减轻您的工作负担。基于托管深度代理 (MDA) 构建。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://github.com/langchain-samples/Persistent-Agent" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 11-24 17:52</span>
+        <span>⭐ 83</span>
+        <span class="score-wrap"><span class="bar"><i style="width:44%"></i></span><span class="score-num">44</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="AI Hot 精选" data-text="人择消息 api pythonco 人择消息 api 消息 python rust 2024 2026 2026 1800 cpu 70% 代币 ä¸ä½სæს¶éს´ç¼©çსçº⁠ 20% 20% api 接口cozh-cn">
+      <div class="title">🔗 <a href="https://aihot.news/items/h1ja45355xx1xf9rqf89cv1if" target="_blank" rel="noopener">人择消息 API Pythonco</a></div>
+      <p class="sum">人择消息 API 消息 Python Rust 2024 2026 2026 1800 CPU 70% 代币 ä¸ä½სæს¶éს´ç¼©çსçº⁠ 20% 20% API 接口cozh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://aihot.news/items/h1ja45355xx1xf9rqf89cv1if" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Anthropicï¼Research</span>
+        <span>🕐 11-24 16:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:36%"></i></span><span class="score-num">36</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="TechCrunch AI" data-text="据报道，亚马逊和 meta 正在谈判解除对人工智能代理 muse 的封锁en 亚马逊和 meta 正在讨论一项可能的交易，该交易将结束 muse 长达两个月的封锁。en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/11/25/amazon-and-meta-reportedly-in-talks-to-lift-blockade-on-ai-agent-muse/" target="_blank" rel="noopener">据报道，亚马逊和 Meta 正在谈判解除对人工智能代理 Muse 的封锁en</a></div>
+      <p class="sum">亚马逊和 Meta 正在讨论一项可能的交易，该交易将结束 Muse 长达两个月的封锁。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://techcrunch.com/2026/11/25/amazon-and-meta-reportedly-in-talks-to-lift-blockade-on-ai-agent-muse/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 14:10</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="量子位" data-text="零基础也能做开发，智元灵心平台一年孵化超3万个机器人智能体 智元推出行业首个开放且完整的具身智能生态技术体系aima">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512715.html" target="_blank" rel="noopener">零基础也能做开发，智元灵心平台一年孵化超3万个机器人智能体</a></div>
+      <p class="sum">智元推出行业首个开放且完整的具身智能生态技术体系AIMA</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>业界首个 / 首创方向</div>
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512715.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-25 14:32</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="The Verge AI" data-text="据报道，亚马逊正在商谈终止 muse ai 购物街区en 据《财富》杂志报道，亚马逊已就让 meta 的 muse ai 代理在其在线市场上购物进行了谈判。据报道，讨论可能会结束亚马逊对 muse 的封锁，讨论的重点是人工智能代理推荐的产品类型以及对这家电子商务巨头广告收入的潜在影响。据《财富》杂志报道，[…]en">
+      <div class="title">🔗 <a href="https://www.theverge.com/tech/1042071/meta-amazon-muse-ai-shopping-discussions" target="_blank" rel="noopener">据报道，亚马逊正在商谈终止 Muse AI 购物街区en</a></div>
+      <p class="sum">据《财富》杂志报道，亚马逊已就让 Meta 的 Muse AI 代理在其在线市场上购物进行了谈判。据报道，讨论可能会结束亚马逊对 Muse 的封锁，讨论的重点是人工智能代理推荐的产品类型以及对这家电子商务巨头广告收入的潜在影响。据《财富》杂志报道，[…]en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://www.theverge.com/tech/1042071/meta-amazon-muse-ai-shopping-discussions" target="_blank" rel="noopener">📡 The Verge AI</a>
+        
+        
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:20%"></i></span><span class="score-num">20</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#10b981" data-cat="agents" data-src="The Verge AI" data-text="vivi 编码是否已使开源成为合成器的新常态？en 强大的振动编码代理和逆向工程等工具的出现在音乐装备世界中造成了混乱，使公司忙于找出应对方法。虽然像罗兰这样的一些人暂时保持沉默，但其他人已经拥抱了模组社区。在过去的几周里，很明显没有[...]en">
+      <div class="title">🔗 <a href="https://www.theverge.com/ai-artificial-intelligence/1040081/vibe-coding-open-source-music-firmware" target="_blank" rel="noopener">Vivi 编码是否已使开源成为合成器的新常态？en</a></div>
+      <p class="sum">强大的振动编码代理和逆向工程等工具的出现在音乐装备世界中造成了混乱，使公司忙于找出应对方法。虽然像罗兰这样的一些人暂时保持沉默，但其他人已经拥抱了模组社区。在过去的几周里，很明显没有[...]en</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>开源项目</div>
+      <div class="meta">
+        <span class="tag" style="background:#10b981">🤖 智能体与应用</span>
+        <a class="srclink" href="https://www.theverge.com/ai-artificial-intelligence/1040081/vibe-coding-open-source-music-firmware" target="_blank" rel="noopener">📡 The Verge AI</a>
+        
+        
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:20%"></i></span><span class="score-num">20</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-opensource" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🛠️ 开源项目与工具</h2><span class="sec-badge" style="background:#0ea5e9" data-cat="opensource" data-total="10">10</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="AI Hot 精选" data-text="é»ä»ååå½å nvidia ä»é¢ä¸´ megaspeed è¯çåºå£åè§è°æ¥ nvidia ceo gpu gpu åoå£åè§é®é¢çè°æ¥ªaæ°å¡æ°æ®ä¸å¿è¥åmegaspeed is gpu it’s 2024 å1´å̀å¡°é°ååæ°1⁥ 2025 å1´±å1¡ å¸å®¤åç¤å½è ´¸äo¤æå§åä⁄⁄4⁄4 ̧¤a ̧§3æ3¡lij">
+      <div class="title">🔗 <a href="https://aihot.news/items/kzwj96fvnn3whzvnhqdvsh830" target="_blank" rel="noopener">é»ä»ååå½å Nvidia ä»é¢ä¸´ Megaspeed è¯çåºå£åè§è°æ¥</a></div>
+      <p class="sum">Nvidia CEO GPU GPU åoå£åè§é®é¢çè°æ¥ªaæ°å¡æ°æ®ä¸å¿è¥åMegaspeed is GPU it’s 2024 å1´å̀å¡°é°ååæ°1⁥ 2025 å1´±å1¡ å¸å®¤åç¤å½è ´¸äo¤æå§åä⁄⁄4⁄4 ̧¤a ̧§3æ3¡lij</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://aihot.news/items/kzwj96fvnn3whzvnhqdvsh830" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ TechCrunchï¼AI</span>
+        <span>🕐 11-25 13:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:43%"></i></span><span class="score-num">43</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="HuggingFace" data-text="dlouapre/looped-transformers space 在线应用（可直接体验） · 👍 22">
+      <div class="title">🔗 <a href="https://huggingface.co/spaces/dlouapre/looped-transformers" target="_blank" rel="noopener">dlouapre/looped-transformers</a></div>
+      <p class="sum">Space 在线应用（可直接体验） · 👍 22</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://huggingface.co/spaces/dlouapre/looped-transformers" target="_blank" rel="noopener">📡 HuggingFace</a>
+        
+        <span>🕐 11-25 12:27</span>
+        <span>👍 22</span>
+        <span class="score-wrap"><span class="bar"><i style="width:37%"></i></span><span class="score-num">37</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="HuggingFace" data-text="cfahlgren1/imagine space 在线应用（可直接体验） · 👍 19">
+      <div class="title">🔗 <a href="https://huggingface.co/spaces/cfahlgren1/imagine" target="_blank" rel="noopener">cfahlgren1/imagine</a></div>
+      <p class="sum">Space 在线应用（可直接体验） · 👍 19</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://huggingface.co/spaces/cfahlgren1/imagine" target="_blank" rel="noopener">📡 HuggingFace</a>
+        
+        <span>🕐 11-24 14:55</span>
+        <span>👍 19</span>
+        <span class="score-wrap"><span class="bar"><i style="width:33%"></i></span><span class="score-num">33</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="HuggingFace" data-text="traderharikrishna/wan_2.2_i2v_14b_custom_lora space 在线应用（可直接体验） · 👍 53">
+      <div class="title">🔗 <a href="https://huggingface.co/spaces/traderharikrishna/Wan_2.2_I2V_14B_Custom_Lora" target="_blank" rel="noopener">traderharikrishna/Wan_2.2_I2V_14B_Custom_Lora</a></div>
+      <p class="sum">Space 在线应用（可直接体验） · 👍 53</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://huggingface.co/spaces/traderharikrishna/Wan_2.2_I2V_14B_Custom_Lora" target="_blank" rel="noopener">📡 HuggingFace</a>
+        
+        <span>🕐 08-17 11:08</span>
+        <span>👍 53</span>
+        <span class="score-wrap"><span class="bar"><i style="width:32%"></i></span><span class="score-num">32</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="GitHub" data-text="victormunoz-sec/hebbmesh 在普通 markdown 和本机节点上的零膨胀 4d 突触内存：sqlite wal — 写入时语义播种 (| sem:)、图形级隐私防火墙、3d 查看器和 0 个外部依赖项。en">
+      <div class="title">🔗 <a href="https://github.com/victormunoz-sec/hebbmesh" target="_blank" rel="noopener">victormunoz-sec/hebbmesh</a></div>
+      <p class="sum">在普通 Markdown 和本机节点上的零膨胀 4D 突触内存：sqlite WAL — 写入时语义播种 (| sem:)、图形级隐私防火墙、3D 查看器和 0 个外部依赖项。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://github.com/victormunoz-sec/hebbmesh" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 11-23 01:07</span>
+        <span>⭐ 7</span>
+        <span class="score-wrap"><span class="bar"><i style="width:31%"></i></span><span class="score-num">31</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="HuggingFace" data-text="huggingfaceswarms/scaling-swarms space 在线应用（可直接体验） · 👍 26">
+      <div class="title">🔗 <a href="https://huggingface.co/spaces/HuggingFaceSwarms/scaling-swarms" target="_blank" rel="noopener">HuggingFaceSwarms/scaling-swarms</a></div>
+      <p class="sum">Space 在线应用（可直接体验） · 👍 26</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://huggingface.co/spaces/HuggingFaceSwarms/scaling-swarms" target="_blank" rel="noopener">📡 HuggingFace</a>
+        
+        <span>🕐 11-17 20:18</span>
+        <span>👍 26</span>
+        <span class="score-wrap"><span class="bar"><i style="width:30%"></i></span><span class="score-num">30</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="IT之家" data-text="降幅约 20%~35%：报告称马斯克 spacex 降价出租 ai 算力 it之家 11 月 26 日消息，行业研究机构 semianalysis 昨日（11 月 25 日）发布报告， 称全球首富埃隆 · 马斯克（elon musk）旗下 spacex 公司正在下调其 ai 计算资源的租赁价格，其重要客户 anthropic 是否续签约 5 万台 h200 gpu 的计算合同，也出现新的不确定性。 报道称，spacex 已将面向小型计算集群的 blackwell gpu 现货租赁报价， 从每 gpu 小时约 15.0 至 15.5 美元 （it之家注：现汇率约合 100.2 至 103.5 元人民币） ，下调至 10 至 12 美元 （现汇率约合 66.8 至 80.1 元人民币） ，降幅约为 20% 到 35% 。it之家援引博文介绍，所谓“现货租赁”，通常指客户按需租用算力，而非签订长期固定合同，因此价格变化更能直接反映短期供需状况。 与此同时，该报告称 azh-cnzh-cn">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/716.htm" target="_blank" rel="noopener">降幅约 20%~35%：报告称马斯克 SpaceX 降价出租 AI 算力</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，行业研究机构 SemiAnalysis 昨日（11 月 25 日）发布报告， 称全球首富埃隆 · 马斯克（Elon Musk）旗下 SpaceX 公司正在下调其 AI 计算资源的租赁价格，其重要客户 Anthropic 是否续签约 5 万台 H200 GPU 的计算合同，也出现新的不确定性。 报道称，SpaceX 已将面向小型计算集群的 Blackwell GPU 现货租赁报价， 从每 GPU 小时约 15.0 至 15.5 美元 （IT之家注：现汇率约合 100.2 至 103.5 元人民币） ，下调至 10 至 12 美元 （现汇率约合 66.8 至 80.1 元人民币） ，降幅约为 20% 到 35% 。IT之家援引博文介绍，所谓“现货租赁”，通常指客户按需租用算力，而非签订长期固定合同，因此价格变化更能直接反映短期供需状况。 与此同时，该报告称 Azh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/716.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 03:50</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="量子位" data-text="顶尖商用级ai视频每秒只要5毛！中国开源新势力拿下全球第一 30秒一镜到底，可自动编排镜头">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512916.html" target="_blank" rel="noopener">顶尖商用级AI视频每秒只要5毛！中国开源新势力拿下全球第一</a></div>
+      <p class="sum">30秒一镜到底，可自动编排镜头</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>刷新评测纪录，开源项目</div>
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512916.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-26 06:41</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="量子位" data-text="算力唤醒真实世界：九章云极发布物理ai工厂与生态开放计划 11月25日，以“算力唤醒真实世界”为主题的2026物理ai行业峰会暨九章云极智算生态大会在深圳举行。">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512582.html" target="_blank" rel="noopener">算力唤醒真实世界：九章云极发布物理AI工厂与生态开放计划</a></div>
+      <p class="sum">11月25日，以“算力唤醒真实世界”为主题的2026物理AI行业峰会暨九章云极智算生态大会在深圳举行。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512582.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-25 14:21</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#0ea5e9" data-cat="opensource" data-src="量子位" data-text="逐际动⼒与商汤⼤装置达成合作，以高质量算力全⾯⽀撑机器⼈仿真训练与测试 贯通具⾝智能研发流程">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512683.html" target="_blank" rel="noopener">逐际动⼒与商汤⼤装置达成合作，以高质量算力全⾯⽀撑机器⼈仿真训练与测试</a></div>
+      <p class="sum">贯通具⾝智能研发流程</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#0ea5e9">🛠️ 开源项目与工具</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512683.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-25 14:20</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-industry" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>📈 行业动态</h2><span class="sec-badge" style="background:#64748b" data-cat="industry" data-total="30">30</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="AI Hot 精选" data-text="42 å·æ»æ£å¯é¿ä»å¥ character.ai ç ´äº§ç¨åºï¼åå¯¹æåç¨æ·ç§å¯èå¤©è®°å½ 42. - 和 2100 210 和 2100 210 和 2100 210 和 2100 210 和 2100 210 11 月 13 日 smirks and pangs acquisition llc smirks and pangs acquisition llc smirks and pangs acquisition llc 2100coko">
+      <div class="title">🔗 <a href="https://aihot.news/items/j0hoj1rlmltoft6okserijp25" target="_blank" rel="noopener">42 å·æ»æ£å¯é¿ä»å¥ Character.AI ç ´äº§ç¨åºï¼åå¯¹æåç¨æ·ç§å¯èå¤©è®°å½</a></div>
+      <p class="sum">42. - 和 2100 210 和 2100 210 和 2100 210 和 2100 210 和 2100 210 11 月 13 日 Smirks and Pangs Acquisition LLC Smirks and Pangs Acquisition LLC Smirks and Pangs Acquisition LLC 2100coko</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://aihot.news/items/j0hoj1rlmltoft6okserijp25" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ TechCrunchï¼AI</span>
+        <span>🕐 11-25 17:35</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:43%"></i></span><span class="score-num">43</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="GitHub" data-text="bitq-m/awesome-antigravity-plugins 🌟 精彩的 google 反重力插件、ui sidecar、桌面 hud、cli 状态栏、mcp 捆绑包、技能和市场扩展的精选列表（英文/中文）en">
+      <div class="title">🔗 <a href="https://github.com/biTQ-m/awesome-antigravity-plugins" target="_blank" rel="noopener">biTQ-m/awesome-antigravity-plugins</a></div>
+      <p class="sum">🌟 精彩的 Google 反重力插件、UI Sidecar、桌面 HUD、CLI 状态栏、MCP 捆绑包、技能和市场扩展的精选列表（英文/中文）en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://github.com/biTQ-m/awesome-antigravity-plugins" target="_blank" rel="noopener">📡 GitHub</a>
+        
+        <span>🕐 11-23 01:47</span>
+        <span>⭐ 79</span>
+        <span class="score-wrap"><span class="bar"><i style="width:41%"></i></span><span class="score-num">41</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="AI Hot 精选" data-text="ft æ¥é nvidia æååä¸åäºåå½åè¿æå¡å¨ ft æለፍ® nvidia å·2éሀሀሚçሰ¥ dellãለကሁsupermicro 这里有更多... ai ai nvidia - nvidia 2025 $104bï¼─────────────────────────────────lij">
+      <div class="title">🔗 <a href="https://aihot.news/items/rlt60gq96bl1cf5b88o8rbj30" target="_blank" rel="noopener">FT æ¥é Nvidia æååä¸åäºåå½åè¿æå¡å¨</a></div>
+      <p class="sum">FT æለፍ® Nvidia å·2éሀሀሚçሰ¥ DellãለကሁSupermicro 这里有更多... AI AI Nvidia - Nvidia 2025 $104Bï¼─────────────────────────────────lij</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://aihot.news/items/rlt60gq96bl1cf5b88o8rbj30" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Rohan Paul</span>
+        <span>🕐 11-26 07:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:41%"></i></span><span class="score-num">41</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="AI Hot 精选" data-text="dario amodei æ¾æ¸ä¸ä¸»å¼ å ai äº¤åºäººç±»èªç±æå¿ 人类达里奥·阿莫代（dario amodei），ä¤å都ºäç±è都ªç郔±æ都å¿ »çkkkkkkkk»kkkºåkkkkkkkkäºkjkkhomkomkkkkkkkkkkkkkkkkkkk»kkkkºåkkkkkkkkäºkjkkhomkhomkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkäºkjkkhomkomkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkäºkjkkhomkomkkkkkkkkkkkkkkkkkkkkkkkkkkkkkæ² ” ” 人择-coth">
+      <div class="title">🔗 <a href="https://aihot.news/items/e6gp31eup40d99unaon9umnpo" target="_blank" rel="noopener">Dario Amodei æ¾æ¸ä¸ä¸»å¼ å AI äº¤åºäººç±»èªç±æå¿</a></div>
+      <p class="sum">人类达里奥·阿莫代（Dario Amodei），ä¤å都ºäç±è都ªç郔±æ都å¿ »çkkkkkkkk»kkkºåkkkkkkkkäºkjkkhomkomkkkkkkkkkkkkkkkkkkk»kkkkºåkkkkkkkkäºkjkkhomkhomkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkäºkjkkhomkomkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkäºkjkkhomkomkkkkkkkkkkkkkkkkkkkkkkkkkkkkkæ² ” ” 人择-coth</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://aihot.news/items/e6gp31eup40d99unaon9umnpo" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Elon Musk</span>
+        <span>🕐 11-25 19:12</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:40%"></i></span><span class="score-num">40</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="AI Hot 精选" data-text="calif 版本 tor browser 15.0.22 uaf 版本 ip 版本en 加利福尼亚州，openai 修补地球。 uaf tor 浏览器 15.0.22 é»ě®¤é¡²å¸¡⁄ሌæ³ለሄéል~²çሒ´æለለ·çለለ å®ለ ipãሒဈሂ（选择原因： åለለሕ´æለኊ«éሜ²äºሆ tor browser 15.0.22 çሚለ uaf - tt">
+      <div class="title">🔗 <a href="https://aihot.news/items/gv1y811sp5p9kl7p3ci7xjt5n" target="_blank" rel="noopener">Calif 版本 Tor Browser 15.0.22 UAF 版本 IP 版本en</a></div>
+      <p class="sum">加利福尼亚州，OpenAI 修补地球。 UAF Tor 浏览器 15.0.22 é»ě®¤é¡²å¸¡⁄ሌæ³ለሄéል~²çሒ´æለለ·çለለ å®ለ IPãሒဈሂ（选择原因： åለለሕ´æለኊ«éሜ²äºሆ Tor Browser 15.0.22 çሚለ UAF - tt</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://aihot.news/items/gv1y811sp5p9kl7p3ci7xjt5n" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Califï¼Research</span>
+        <span>🕐 11-26 00:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:39%"></i></span><span class="score-num">39</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="微软纳德拉：自研 ai 落后 3~6 个月没关系，“量大管饱”才是硬道理 it之家 11 月 26 日消息，在《纽约时报》dealbook 峰会上，微软首席执行官萨蒂亚 · 纳德拉（satya nadella）表示，微软自研 ai 模型落后 3~6 个月没关系， 重点是性价比高，“量大管饱”才是硬道理。 在峰会期间，纳德拉强调微软自研 mai 系列模型在发布时，从未奔着击败 openai 或 anthropic 的前沿模型而去。在他看来，只要模型性能足够接近，而训练和运行成本显着更低， 落后 3 到 6 个月反而是“非常好的位置”。 纳德拉称，微软自研的 mai 模型可以在仅使用竞争对手百分之五到百分之二十计算资源的情况下，实现接近前沿模型的水平。他强调，ai 竞争的关键不是单纯追求“最聪明”， 更看“每美元能产出多少结果”。 纳德拉透露，copilot 已经具备一个“决策引擎”，会根据用户任务判断应调用 openai、anthropic 还是微软自研模型。大多enzh-cn">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/805.htm" target="_blank" rel="noopener">微软纳德拉：自研 AI 落后 3~6 个月没关系，“量大管饱”才是硬道理</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，在《纽约时报》DealBook 峰会上，微软首席执行官萨蒂亚 · 纳德拉（Satya Nadella）表示，微软自研 AI 模型落后 3~6 个月没关系， 重点是性价比高，“量大管饱”才是硬道理。 在峰会期间，纳德拉强调微软自研 MAI 系列模型在发布时，从未奔着击败 OpenAI 或 Anthropic 的前沿模型而去。在他看来，只要模型性能足够接近，而训练和运行成本显着更低， 落后 3 到 6 个月反而是“非常好的位置”。 纳德拉称，微软自研的 MAI 模型可以在仅使用竞争对手百分之五到百分之二十计算资源的情况下，实现接近前沿模型的水平。他强调，AI 竞争的关键不是单纯追求“最聪明”， 更看“每美元能产出多少结果”。 纳德拉透露，Copilot 已经具备一个“决策引擎”，会根据用户任务判断应调用 OpenAI、Anthropic 还是微软自研模型。大多enzh-CN</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>性能超越 OpenAI（领先同类）</div>
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/805.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 07:11</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="微软总裁史密斯警告：ai 让漏洞发现更快，开发者仓促打补丁或引发更多宕机 it之家 11 月 26 日消息，距离一场重创全球公共和私营机构的大规模 microsoft 365 宕机不到两周，微软总裁兼副主席布拉德 · 史密斯（brad smith）就警告称，可能还会有更多技术宕机发生。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/798.htm" target="_blank" rel="noopener">微软总裁史密斯警告：AI 让漏洞发现更快，开发者仓促打补丁或引发更多宕机</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，距离一场重创全球公共和私营机构的大规模 Microsoft 365 宕机不到两周，微软总裁兼副主席布拉德 · 史密斯（Brad Smith）就警告称，可能还会有更多技术宕机发生。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/798.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 07:10</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="宇树王兴兴预测：5-10 年内中国机器人产量有望超汽车，年产量超 2000 万台 it之家 11 月 26 日消息，据科创板日报报道，11 月 26 日，在北京举行的 wise2026 大会上，宇树科技创始人、董事长王兴兴判断， 5 到 10 年内，中国机器人产量有望超过汽车，年产量超过 2000 万台 。 宇树公司此前透露， 公司 2025 全年人形机器人实际出货量超 5500 台 ，2025 年本体量产下线超 6500 台。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/790.htm" target="_blank" rel="noopener">宇树王兴兴预测：5-10 年内中国机器人产量有望超汽车，年产量超 2000 万台</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，据科创板日报报道，11 月 26 日，在北京举行的 WISE2026 大会上，宇树科技创始人、董事长王兴兴判断， 5 到 10 年内，中国机器人产量有望超过汽车，年产量超过 2000 万台 。 宇树公司此前透露， 公司 2025 全年人形机器人实际出货量超 5500 台 ，2025 年本体量产下线超 6500 台。</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>性能超越 汽车（领先同类）</div>
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/790.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 07:05</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="小鹏 iron 机器人广州车展首次上岗接待，覆盖主持、导购等多场景 it之家 11 月 26 日消息，小鹏宣布，明天，小鹏集团将带着最新的物理 ai 科技登陆 2026 广州国际车展，小鹏 iron 机器人首次上岗接待。 it之家附官方公布亮点： 小鹏 iron 机器人首次上岗 ，多台机器人在现场接待、导购、导览，用户可以直接和 iron 近距离互动 小鹏 p7 全新车色发布 mona l03 永劫无间痛车展出 mona l…">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/782.htm" target="_blank" rel="noopener">小鹏 IRON 机器人广州车展首次上岗接待，覆盖主持、导购等多场景</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，小鹏宣布，明天，小鹏集团将带着最新的物理 AI 科技登陆 2026 广州国际车展，小鹏 IRON 机器人首次上岗接待。 IT之家附官方公布亮点： 小鹏 IRON 机器人首次上岗 ，多台机器人在现场接待、导购、导览，用户可以直接和 IRON 近距离互动 小鹏 P7 全新车色发布 MONA L03 永劫无间痛车展出 MONA L…</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/782.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 07:02</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="“无 ai 游戏节”现身 steam，作品想入选必须提交未使用生成式人工智能证明 it之家 11 月 26 日消息，独立游戏营销机构 dev land marketing 昨日开始在 steam 平台举办“无 ai 游戏节”，入选游戏大约有 100 款。 据介绍， 本次活动要求入选游戏完全不使用生成式 ai 。开发者需要提交一系列游戏制作材料，包括设计草图、美术素材制作延时录像，以及开发过程的录屏等，证明自己没有使用 ai。 it之家注意到，本次活动的发起人 gajda andreea 同样反对使用 ai 生成游戏代码。不过她在活动官网坦言，目前缺乏可靠手段来核实开发者是否在编程过程中使用了 ai。因此主办方只能相信开发者的说辞，对于任何公开承认使用 ai 生成代码的开发者，他的作品都不会获得参展资格。 如果游戏节举办期间，有参展游戏被发现使用了生成式 ai，那么该作将被立即移出活动名单，其开发工作室也将被永久禁止参加未来的同类活动。zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/769.htm" target="_blank" rel="noopener">“无 AI 游戏节”现身 Steam，作品想入选必须提交未使用生成式人工智能证明</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，独立游戏营销机构 Dev Land Marketing 昨日开始在 Steam 平台举办“无 AI 游戏节”，入选游戏大约有 100 款。 据介绍， 本次活动要求入选游戏完全不使用生成式 AI 。开发者需要提交一系列游戏制作材料，包括设计草图、美术素材制作延时录像，以及开发过程的录屏等，证明自己没有使用 AI。 IT之家注意到，本次活动的发起人 Gajda Andreea 同样反对使用 AI 生成游戏代码。不过她在活动官网坦言，目前缺乏可靠手段来核实开发者是否在编程过程中使用了 AI。因此主办方只能相信开发者的说辞，对于任何公开承认使用 AI 生成代码的开发者，他的作品都不会获得参展资格。 如果游戏节举办期间，有参展游戏被发现使用了生成式 AI，那么该作将被立即移出活动名单，其开发工作室也将被永久禁止参加未来的同类活动。zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/769.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 06:44</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="小鹏汽车：iron 人形机器人售价或将与电动汽车相当 it之家 11 月 26 日消息，小鹏汽车副董事长顾宏地今日接受彭博社采访时表示，iron 人形机器人将在明年一季度接受零售助理岗位的培训，随后正式上市。 他表示机器人的定价可能接近电动汽车的销售中价位 ，但没有透露更多细节。目前，小鹏汽车旗下车型的售价在大约 11.98 万元至 30.98 万元之间。 小鹏汽车计划在 2027 年销售数万台人形机器人。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/755.htm" target="_blank" rel="noopener">小鹏汽车：IRON 人形机器人售价或将与电动汽车相当</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，小鹏汽车副董事长顾宏地今日接受彭博社采访时表示，IRON 人形机器人将在明年一季度接受零售助理岗位的培训，随后正式上市。 他表示机器人的定价可能接近电动汽车的销售中价位 ，但没有透露更多细节。目前，小鹏汽车旗下车型的售价在大约 11.98 万元至 30.98 万元之间。 小鹏汽车计划在 2027 年销售数万台人形机器人。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/755.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 06:13</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="马斯克质疑称多数机器人演示是摆拍，figure 接招用 41 秒视频回击 it之家 11 月 26 日消息，人形机器人公司 figure 于 11 月 24 日回应马斯克的“摆拍、预先编程”质疑， 发布一段 41 秒视频，展示 figure 03 机器人在桌子被人为移动后，仍能重新定位并取回放在桌上的苹果。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/739.htm" target="_blank" rel="noopener">马斯克质疑称多数机器人演示是摆拍，Figure 接招用 41 秒视频回击</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，人形机器人公司 Figure 于 11 月 24 日回应马斯克的“摆拍、预先编程”质疑， 发布一段 41 秒视频，展示 Figure 03 机器人在桌子被人为移动后，仍能重新定位并取回放在桌上的苹果。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/739.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 04:55</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="铠侠与英伟达合作，探索如何将 gpu 有效显存扩展至 pb 级 it之家 11 月 26 日消息，铠侠今日宣布与英伟达展开合作，启动面向 ai 应用的概念验证。该项目将利用英伟达 scada 软件，结合铠侠 ssd 的性能， 探索如何将 gpu 的有效显存扩展至 pb 级 。 it之家了解到，此次合作将在一套英伟达 gb200 nvl72 机架级系统上展开验证。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/722.htm" target="_blank" rel="noopener">铠侠与英伟达合作，探索如何将 GPU 有效显存扩展至 PB 级</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，铠侠今日宣布与英伟达展开合作，启动面向 AI 应用的概念验证。该项目将利用英伟达 SCADA 软件，结合铠侠 SSD 的性能， 探索如何将 GPU 的有效显存扩展至 PB 级 。 IT之家了解到，此次合作将在一套英伟达 GB200 NVL72 机架级系统上展开验证。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/722.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 04:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="IT之家" data-text="1999 元：技嘉推出 g27q36 电竞显示器，27 英寸 2k 425hz fastips 面板 it之家 11 月 26 日消息，技嘉现已推出 g27q36 电竞显示器。新品采用 27 英寸 fastips 面板，分辨率为 qhd（2k），最高支持 425hz 高刷， 售价 1999 元 。 据介绍，这款显示器的原生刷新率为 360hz，可超频至 425hz。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/709.htm" target="_blank" rel="noopener">1999 元：技嘉推出 G27Q36 电竞显示器，27 英寸 2K 425Hz FastIPS 面板</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，技嘉现已推出 G27Q36 电竞显示器。新品采用 27 英寸 FastIPS 面板，分辨率为 QHD（2K），最高支持 425Hz 高刷， 售价 1999 元 。 据介绍，这款显示器的原生刷新率为 360Hz，可超频至 425Hz。</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>刷新评测纪录</div>
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/709.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 03:44</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="爱范儿" data-text="robotaxi 即将开启无人运营、机器人脱稿演讲，小鹏科技日迎来了自己的「奇点时刻」 技术实力的外溢。 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。">
+      <div class="title">🔗 <a href="https://www.ifanr.com/1695212" target="_blank" rel="noopener">Robotaxi 即将开启无人运营、机器人脱稿演讲，小鹏科技日迎来了自己的「奇点时刻」</a></div>
+      <p class="sum">技术实力的外溢。 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ifanr.com/1695212" target="_blank" rel="noopener">📡 爱范儿</a>
+        
+        <span>🕐 11-26 02:25</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="爱范儿" data-text="a社曝光了一份ai整顿职场魔幻实录，请甩给你那位沉迷ai提效的老板 你用公司的 ai 省下的时间是公司的 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。">
+      <div class="title">🔗 <a href="https://www.ifanr.com/1691748" target="_blank" rel="noopener">A社曝光了一份AI整顿职场魔幻实录，请甩给你那位沉迷AI提效的老板</a></div>
+      <p class="sum">你用公司的 AI 省下的时间是公司的 #欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.ifanr.com/1691748" target="_blank" rel="noopener">📡 爱范儿</a>
+        
+        <span>🕐 11-26 01:28</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="标准普尔考虑因治理和“关键人物”风险而下调英伟达信用评级en 信用评级机构可能会将英伟达的信用评级下调至第四高评级aa-。en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/11/25/sp-considers-nvidia-credit-downgrade-over-governance-and-key-man-risks/" target="_blank" rel="noopener">标准普尔考虑因治理和“关键人物”风险而下调英伟达信用评级en</a></div>
+      <p class="sum">信用评级机构可能会将英伟达的信用评级下调至第四高评级AA-。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/11/25/sp-considers-nvidia-credit-downgrade-over-governance-and-key-man-risks/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 22:44</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="黄仁勋违反了英伟达的行为准则，他的员工可能不会忘记en 大多数行为准则都是企业文化的反映。就英伟达而言，这可能会产生后果。en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/11/25/jensen-huang-broke-nvidias-code-of-conduct-and-his-employees-may-not-forget-it/" target="_blank" rel="noopener">黄仁勋违反了英伟达的行为准则，他的员工可能不会忘记en</a></div>
+      <p class="sum">大多数行为准则都是企业文化的反映。就英伟达而言，这可能会产生后果。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/11/25/jensen-huang-broke-nvidias-code-of-conduct-and-his-employees-may-not-forget-it/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 19:54</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="anthropic 的 dario amodei 称将人类控制权交给人工智能的指控“荒谬”en anthropic 首席执行官达里奥·阿莫迪 (dario amodei) 反驳了竞争对手的指控，称他倾向于将人类代理权交给人工智能，尽管领先的人工智能公司越来越多地自动化自己的研究和模型开发。enzh-cn">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/11/25/anthropics-dario-amodei-calls-accusations-of-surrendering-human-control-to-ai-absurd/" target="_blank" rel="noopener">Anthropic 的 Dario Amodei 称将人类控制权交给人工智能的指控“荒谬”en</a></div>
+      <p class="sum">Anthropic 首席执行官达里奥·阿莫迪 (Dario Amodei) 反驳了竞争对手的指控，称他倾向于将人类代理权交给人工智能，尽管领先的人工智能公司越来越多地自动化自己的研究和模型开发。enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/11/25/anthropics-dario-amodei-calls-accusations-of-surrendering-human-control-to-ai-absurd/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 19:44</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="character.ai 拍卖用户私人聊天记录的计划受到国家总检察长的质疑en 州总检察长表示，拟议中的 character.ai 破产出售涉及超过 2100 万个美国账户的敏感个人数据，其中 210 万个账户是未成年人注册的。enzh-cn">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/11/25/state-ags-fight-character-ais-plan-to-auction-off-users-private-chats/" target="_blank" rel="noopener">Character.AI 拍卖用户私人聊天记录的计划受到国家总检察长的质疑en</a></div>
+      <p class="sum">州总检察长表示，拟议中的 Character.ai 破产出售涉及超过 2100 万个美国账户的敏感个人数据，其中 210 万个账户是未成年人注册的。enzh-CN</p>
+      <div class="hl-box"><span class="hl-tag">💡 优势</span>性能超越 2100（领先同类）</div>
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/11/25/state-ags-fight-character-ais-plan-to-auction-off-users-private-chats/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 17:35</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="人工智能数据中心的建设变得越来越困难，neoclouds 也感受到了这一点en 英伟达已经明确表示，在人工智能数据中心几乎准备好运行之前，它不会支持它，而这一点正值 neoclouds 报告建设延误和更昂贵的债务之际。向开发商传达的信息是，土地、电力和竣工建筑比融资演讲稿更重要。安妮塔·维尔玛-拉里安 (anita verma-lallian) 一直在推销这一点。 […]enzh-cn">
+      <div class="title">🔗 <a href="https://techcrunch.com/podcast/ai-data-centers-are-becoming-harder-to-build-and-neoclouds-are-feeling-it/" target="_blank" rel="noopener">人工智能数据中心的建设变得越来越困难，neoclouds 也感受到了这一点en</a></div>
+      <p class="sum">英伟达已经明确表示，在人工智能数据中心几乎准备好运行之前，它不会支持它，而这一点正值 Neoclouds 报告建设延误和更昂贵的债务之际。向开发商传达的信息是，土地、电力和竣工建筑比融资演讲稿更重要。安妮塔·维尔玛-拉里安 (Anita Verma-Lallian) 一直在推销这一点。 […]enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/podcast/ai-data-centers-are-becoming-harder-to-build-and-neoclouds-are-feeling-it/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 15:41</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="TechCrunch AI" data-text="黄仁勋和 nvidia 仍需要回答有关 megaspeed 的问题en 调查人员面临的核心问题是，英伟达对这些芯片的最终去向了解多少，以及黄与 megaspeed 高管的风流韵事是否让该公司有理由怀疑 megaspeed 的保证。en">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/11/25/the-questions-jensen-huang-and-nvidia-will-still-have-to-answer-about-megaspeed/" target="_blank" rel="noopener">黄仁勋和 Nvidia 仍需要回答有关 Megaspeed 的问题en</a></div>
+      <p class="sum">调查人员面临的核心问题是，英伟达对这些芯片的最终去向了解多少，以及黄与 Megaspeed 高管的风流韵事是否让该公司有理由怀疑 Megaspeed 的保证。en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://techcrunch.com/2026/11/25/the-questions-jensen-huang-and-nvidia-will-still-have-to-answer-about-megaspeed/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 13:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="沈向洋刚讲了好多ai非共识啊 “灵巧手是人类最后的尊严”">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512840.html" target="_blank" rel="noopener">沈向洋刚讲了好多AI非共识啊</a></div>
+      <p class="sum">“灵巧手是人类最后的尊严”</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512840.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-26 03:13</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="ai影视高地正在北影海淀一带崛起，「一人制片厂」基建搭好了 叠满海淀最强ai buff。">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512828.html" target="_blank" rel="noopener">AI影视高地正在北影海淀一带崛起，「一人制片厂」基建搭好了</a></div>
+      <p class="sum">叠满海淀最强AI Buff。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512828.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-26 02:53</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="刚刚，黎曼猜想证明代码暴砍了99.5%！只剩7.6万行 合着全让a➗揽了">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512819.html" target="_blank" rel="noopener">刚刚，黎曼猜想证明代码暴砍了99.5%！只剩7.6万行</a></div>
+      <p class="sum">合着全让A➗揽了</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512819.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-26 00:40</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="我以为这是摄影作品，你告诉我这是最新的国产ai？！ 商汤sensenova u1.6">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512748.html" target="_blank" rel="noopener">我以为这是摄影作品，你告诉我这是最新的国产AI？！</a></div>
+      <p class="sum">商汤SenseNova U1.6</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512748.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-25 16:34</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="量子位" data-text="丢个故事就行！直出15分钟ai短片，家里二舅也能上手 ">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512727.html" target="_blank" rel="noopener">丢个故事就行！直出15分钟AI短片，家里二舅也能上手</a></div>
+      
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512727.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-25 14:51</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="The Verge AI" data-text="谷歌的定制人工智能视频源专利描绘了娱乐业未来的黯淡景象en 去年，谷歌为名为“我的频道”的系统申请了专利，该系统旨在根据该公司了解的用户信息创建充满个性化、人工智能生成的视频和广告的提要。该专利已被拒绝，但不幸的是，谷歌可能会上诉或重新提交修改版本，我们可以看到这个怪物的出现[...]en">
+      <div class="title">🔗 <a href="https://www.theverge.com/entertainment/1042221/google-my-channel-ai-video-patent" target="_blank" rel="noopener">谷歌的定制人工智能视频源专利描绘了娱乐业未来的黯淡景象en</a></div>
+      <p class="sum">去年，谷歌为名为“我的频道”的系统申请了专利，该系统旨在根据该公司了解的用户信息创建充满个性化、人工智能生成的视频和广告的提要。该专利已被拒绝，但不幸的是，谷歌可能会上诉或重新提交修改版本，我们可以看到这个怪物的出现[...]en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.theverge.com/entertainment/1042221/google-my-channel-ai-video-patent" target="_blank" rel="noopener">📡 The Verge AI</a>
+        
+        
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:20%"></i></span><span class="score-num">20</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="The Verge AI" data-text="fcc 批准 spacex 将多达 100 万颗数据中心卫星送入太空的计划en 在周三的一份声明中，fcc 表示，它授权 spacex 部署多达 100 万颗配备人工智能芯片的卫星，作为埃隆·马斯克旗下公司“starmind”计划的一部分。其他几个公司也追求将人工智能数据中心放入太空的想法，包括谷歌和蓝色起源，这是该机构首次批准[...]en">
+      <div class="title">🔗 <a href="https://www.theverge.com/science/1042278/spacex-fcc-starmind-ai-space-data-centers" target="_blank" rel="noopener">FCC 批准 SpaceX 将多达 100 万颗数据中心卫星送入太空的计划en</a></div>
+      <p class="sum">在周三的一份声明中，FCC 表示，它授权 SpaceX 部署多达 100 万颗配备人工智能芯片的卫星，作为埃隆·马斯克旗下公司“Starmind”计划的一部分。其他几个公司也追求将人工智能数据中心放入太空的想法，包括谷歌和蓝色起源，这是该机构首次批准[...]en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.theverge.com/science/1042278/spacex-fcc-starmind-ai-space-data-centers" target="_blank" rel="noopener">📡 The Verge AI</a>
+        
+        
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:20%"></i></span><span class="score-num">20</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#64748b" data-cat="industry" data-src="The Verge AI" data-text="没有什么可以全面展示其人工智能耳机和充电盒en 在 12 月 8 日发布之前，没有什么可以更详细地展示其即将推出的 ai 耳机。 ear note 耳机可以记录您的通话，而其充电盒可以记录、转录和总结您的对话。与 ear 3 一样，ear note 的麦克风配备盒配有一个“通话”按钮，您可以[...]en">
+      <div class="title">🔗 <a href="https://www.theverge.com/gadgets/1042162/nothing-ear-note-ai-earbuds-reveal" target="_blank" rel="noopener">没有什么可以全面展示其人工智能耳机和充电盒en</a></div>
+      <p class="sum">在 12 月 8 日发布之前，没有什么可以更详细地展示其即将推出的 AI 耳机。 Ear Note 耳机可以记录您的通话，而其充电盒可以记录、转录和总结您的对话。与 Ear 3 一样，Ear Note 的麦克风配备盒配有一个“通话”按钮，您可以[...]en</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#64748b">📈 行业动态</span>
+        <a class="srclink" href="https://www.theverge.com/gadgets/1042162/nothing-ear-note-ai-earbuds-reveal" target="_blank" rel="noopener">📡 The Verge AI</a>
+        
+        
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:20%"></i></span><span class="score-num">20</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-research" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>🔬 研究前沿</h2><span class="sec-badge" style="background:#8b5cf6" data-cat="research" data-total="4">4</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="AI Hot 精选" data-text="oempocalypse 第 2 部分 - knox dualdar 根 galaxy s23 - s26 - 根en calif research åå¸ oempocalypse ç³»åç¬¬äºç¯ï¼éè¿ knox dualdar ç confused-deputy æ¼æ´ä¸åæ ¸é©±å¨é¡µ uaf ç»æä¸¤é¶æ®µå©ç¨é¾ï¼ä»é¶æéåºç¨å¨ galaxy s23ãs26 euãs26 us å s26 ultra åæ¬¾æºåä¸é«å¯é è·å rootã（入选理由：ä½èäº²åå¤ç°å¹¶æ«é²å®æ´æ¼æ´ç»èï¼è¯»èå¯äºè§£ oem é©±å¨æ¼æ´é¾å¦ä½ç»è¿ rkp ç­å¤å±é²å¾¡è·å rootã）zh-cnzh-cn">
+      <div class="title">🔗 <a href="https://aihot.news/items/g5yjacklnlbp3v51hkzciksjy" target="_blank" rel="noopener">OEMpocalypse 第 2 部分 - Knox DualDAR 根 Galaxy S23 - S26 - 根en</a></div>
+      <p class="sum">Calif Research åå¸ OEMpocalypse ç³»åç¬¬äºç¯ï¼éè¿ Knox DualDAR ç confused-deputy æ¼æ´ä¸åæ ¸é©±å¨é¡µ UAF ç»æä¸¤é¶æ®µå©ç¨é¾ï¼ä»é¶æéåºç¨å¨ Galaxy S23ãS26 EUãS26 US å S26 Ultra åæ¬¾æºåä¸é«å¯é è·å rootã（入选理由：ä½èäº²åå¤ç°å¹¶æ«é²å®æ´æ¼æ´ç»èï¼è¯»èå¯äºè§£ OEM é©±å¨æ¼æ´é¾å¦ä½ç»è¿ RKP ç­å¤å±é²å¾¡è·å rootã）zh-CNzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="https://aihot.news/items/g5yjacklnlbp3v51hkzciksjy" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ Califï¼Research</span>
+        <span>🕐 11-26 00:00</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:41%"></i></span><span class="score-num">41</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="AI Hot 精选" data-text="开放爪 2026.11.10。co openclaw 计划于 2026 年 11 月 10 日发布。知识�¤��� 浏览器交接�è�����æ�æ�ç���� « 7,671 ä ̧ª prã3 ä1⁄2is ́¡ç®isï1⁄4å®æ ́is ´ æis§ https://docs.openclaw.ai/releases/2026.11.10ã（入选理由：å®æ¹çæ¬åå¸ï¼ååº 深入研究°è¤åï1⁄4ìè´»è´ǻæ®æ¤è̿ä1⁄4°æ¤åªço§ªª！lijzh-cn">
+      <div class="title">🔗 <a href="https://aihot.news/items/vz3bvc1o7zuki3x2zw8lnnv78" target="_blank" rel="noopener">开放爪 2026.11.10。co</a></div>
+      <p class="sum">OpenClaw 计划于 2026 年 11 月 10 日发布。知识�¤��� 浏览器交接�è�����æ�æ�ç���� « 7,671 ä ̧ª PRã3 ä1⁄2is ́¡ç®isï1⁄4å®æ ́is ´ æis§ https://docs.openclaw.ai/releases/2026.11.10ã（入选理由：å®æ¹çæ¬åå¸ï¼ååº 深入研究°è¤åï1⁄4Ìè´»è´ǻæ®æ¤è̿ä1⁄4°æ¤åªço§ªª！lijzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="https://aihot.news/items/vz3bvc1o7zuki3x2zw8lnnv78" target="_blank" rel="noopener">📡 AI Hot 精选</a>
+        <span>↳ OpenClaw</span>
+        <span>🕐 11-25 14:05</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:40%"></i></span><span class="score-num">40</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="TechCrunch AI" data-text="今年圣诞节想给你的孩子买一个人工智能玩具吗？不在纽约en 纽约已禁止人工智能聊天机器人玩具五年，因为 common sense media 的新研究揭示了令人不安的安全问题，包括接触不当内容和情绪发展风险。enzh-cn">
+      <div class="title">🔗 <a href="https://techcrunch.com/2026/11/25/want-to-buy-your-kid-an-ai-toy-this-christmas-not-in-new-york/" target="_blank" rel="noopener">今年圣诞节想给你的孩子买一个人工智能玩具吗？不在纽约en</a></div>
+      <p class="sum">纽约已禁止人工智能聊天机器人玩具五年，因为 Common Sense Media 的新研究揭示了令人不安的安全问题，包括接触不当内容和情绪发展风险。enzh-CN</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="https://techcrunch.com/2026/11/25/want-to-buy-your-kid-an-ai-toy-this-christmas-not-in-new-york/" target="_blank" rel="noopener">📡 TechCrunch AI</a>
+        
+        <span>🕐 11-25 18:11</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div>
+    <div class="card" style="--cat:#8b5cf6" data-cat="research" data-src="量子位" data-text="任少卿带着世界模型3.0来了！蔚来智驾训练提效5倍，座舱也用上强化学习 李斌坦言：不做ai变革可能活不下去">
+      <div class="title">🔗 <a href="https://www.qbitai.com/2026/11/512897.html" target="_blank" rel="noopener">任少卿带着世界模型3.0来了！蔚来智驾训练提效5倍，座舱也用上强化学习</a></div>
+      <p class="sum">李斌坦言：不做AI变革可能活不下去</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#8b5cf6">🔬 研究前沿</span>
+        <a class="srclink" href="https://www.qbitai.com/2026/11/512897.html" target="_blank" rel="noopener">📡 量子位</a>
+        
+        <span>🕐 11-26 03:23</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div></div></section><section id="cat-policy" data-sec class="collapsed"><div class="container"><div class="sec-head"><span class="toggle">▾</span><h2>⚖️ 政策与安全</h2><span class="sec-badge" style="background:#ef4444" data-cat="policy" data-total="1">1</span><div class="sec-line"></div></div>
+    <div class="card" style="--cat:#ef4444" data-cat="policy" data-src="IT之家" data-text="中国牵头制定，人工智能训练数据质量国际标准成 30 余个欧洲国家重要技术参考 it之家 11 月 26 日消息，据央视新闻今日报道，由我国专家牵头制定的人工智能训练数据质量国际标准（iso / iec 5259-4:2024） 已被欧洲相关机构采纳，成为 30 余个欧洲国家人工智能合规评估的重要技术参考 ，将应用于人工智能训练数据采集、标注、质量判断等环节。 我国在人工智能国际规则制定中持续发挥重要作用。">
+      <div class="title">🔗 <a href="https://www.ithome.com/1/032/714.htm" target="_blank" rel="noopener">中国牵头制定，人工智能训练数据质量国际标准成 30 余个欧洲国家重要技术参考</a></div>
+      <p class="sum">IT之家 11 月 26 日消息，据央视新闻今日报道，由我国专家牵头制定的人工智能训练数据质量国际标准（ISO / IEC 5259-4:2024） 已被欧洲相关机构采纳，成为 30 余个欧洲国家人工智能合规评估的重要技术参考 ，将应用于人工智能训练数据采集、标注、质量判断等环节。 我国在人工智能国际规则制定中持续发挥重要作用。</p>
+      
+      <div class="meta">
+        <span class="tag" style="background:#ef4444">⚖️ 政策与安全</span>
+        <a class="srclink" href="https://www.ithome.com/1/032/714.htm" target="_blank" rel="noopener">📡 IT之家</a>
+        
+        <span>🕐 11-26 03:47</span>
+        <span></span>
+        <span class="score-wrap"><span class="bar"><i style="width:29%"></i></span><span class="score-num">29</span></span>
+      </div>
+      
+    </div></div></section><p class="note" id="no-res" hidden style="text-align:center;padding:34px 0">🫙 没有匹配的条目——试试更换信源或关键词</p>
+<footer><div class="container"><hr>
+<p style="color:#ef4444">⚠️ 数据源异常（连续失败），已自动容错：Reddit 免费线报(18天：429 Client Error: Too Many Requests for url: https://www.red)</p>
+<p>报告生成时间：2026-11-26 07:34 ｜ 数据库累计收录 8893 条</p>
+<p>来源分布：IT之家(15)、AI Hot 精选(14)、量子位(10)、GitHub(9)、TechCrunch AI(9)、HuggingFace(8)、The Verge AI(5)、爱范儿(2)</p>
+<p>本报告由 AI 项目信息收集平台自动抓取公开数据源生成，内容版权归原作者所有。</p>
+<p><a href="weekly.html">📊 查看近 7 天周报</a> ｜ <a href="index.html">← 返回历史报告列表</a></p>
+</div></footer>
+
+<script>
+(function () {
+  // 板块折叠：点击标题在展开/折叠间切换
+  document.querySelectorAll("[data-sec] .sec-head").forEach(function (h) {
+    h.addEventListener("click", function () {
+      var sec = h.closest("section");
+      if (sec) sec.classList.toggle("collapsed");
+    });
+  });
+  // 点导航 chip 时展开对应分类；若正有热词/搜索/信源筛选，则一并清空，
+  // 避免某分类被筛选隐藏后「点不开」
+  document.querySelectorAll('nav.cats a.chip[href^="#"]').forEach(function (a) {
+    a.addEventListener("click", function () {
+      src = ""; q = ""; kw = "";
+      var sel = document.getElementById("srcsel"); if (sel) sel.value = "";
+      var qbox = document.getElementById("q"); if (qbox) qbox.value = "";
+      document.querySelectorAll(".chip.kw.active").forEach(function (c) { c.classList.remove("active"); });
+      var id = a.getAttribute("href").slice(1);
+      var sec = document.getElementById(id);
+      if (sec) {
+        sec.classList.toggle("collapsed");            // 点击类目按钮折叠/展开
+        if (!sec.classList.contains("collapsed")) {
+          sec.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+      apply();
+    });
+  });
+
+  var src = "";   // 选中的信源，空 = 全部
+  var q = "";     // 搜索关键词（小写）
+  var kw = "";    // 今日热词筛选（小写）
+  // 规范化：与后端热词计数同一套规则（去空格/连字符/标点，保留字母数字与中文），
+  // 让 "Claude5" 也能命中卡片里的 "Claude 5"，且热词条数 = 实际筛出卡片数
+  function _norm(s) { return (s || "").toLowerCase().replace(/[^a-z0-9一-鿿]/g, ""); }
+  function matches(c) {
+    if (src && c.getAttribute("data-src") !== src) return false;
+    var raw = (c.getAttribute("data-text") || "");
+    if (q) {
+      var nq = _norm(q), ntq = _norm(raw);
+      if (nq && ntq.indexOf(nq) === -1) return false;
+    }
+    if (kw) {
+      var nk = _norm(kw), ntk = _norm(raw);
+      if (nk && ntk.indexOf(nk) === -1) return false;
+    }
+    return true;
+  }
+  function apply() {
+    var filtering = !!(src || q || kw);
+    var n = 0, firstVisible = null;
+    var catCounts = {};   // 各分类「筛选后命中数」
+    document.querySelectorAll(".card[data-src]").forEach(function (c) {
+      var ok = matches(c);
+      if (!ok) {
+        c.style.display = "none";
+        return;
+      }
+      if (filtering) {
+        // 筛选命中：真正移除 .beyond（空 inline display 无法覆盖 CSS 的
+        // .card.beyond{display:none}），隐藏卡片才能显现
+        c.classList.remove("beyond");
+        c.style.display = "";
+      } else if (c.hasAttribute("data-beyond")) {
+        // 无筛选：恢复「加载更多」之前的隐藏状态
+        c.classList.add("beyond");
+        c.style.display = "none";
+      } else {
+        c.style.display = "";
+      }
+      n++; if (!firstVisible) firstVisible = c;
+      var cat = c.getAttribute("data-cat");
+      if (cat) catCounts[cat] = (catCounts[cat] || 0) + 1;
+    });
+    // 更新分类数字：导航 chip 与板块徽标显示「筛选后命中数」，其求和 = 热词 ×N；
+    // 无筛选时恢复各分类总数。导航 chip 命中为 0 时隐藏，避免干扰。
+    document.querySelectorAll("[data-cat][data-total]").forEach(function (el) {
+      var cat = el.getAttribute("data-cat");
+      var total = el.getAttribute("data-total") || "0";
+      var span = el.querySelector(".n") || el;
+      if (filtering) {
+        var v = catCounts[cat] || 0;
+        if (el.classList.contains("chip")) el.style.display = v ? "" : "none";
+        span.textContent = v;
+      } else {
+        if (el.classList.contains("chip")) el.style.display = "";
+        span.textContent = total;
+      }
+    });
+    // 没有可见卡片的分类板块整体隐藏
+    document.querySelectorAll("[data-sec]").forEach(function (sec) {
+      var cards = sec.querySelectorAll(".card[data-src]");
+      var any = Array.prototype.some.call(cards, function (c) {
+        return c.style.display !== "none";
+      });
+      sec.style.display = any ? "" : "none";
+    });
+    var nr = document.getElementById("no-res");
+    if (nr) nr.hidden = n > 0;
+    var cnt = document.getElementById("match-cnt");
+    if (cnt) cnt.textContent = (src || q || kw) ? ("匹配 " + n + " 条") : "";
+    // 筛选后把视口移到第一条命中结果：避免当前板块被隐藏后「以为没筛选」
+    if (filtering && firstVisible) {
+      var r = firstVisible.getBoundingClientRect();
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      if (r.top < 0 || r.top > vh) {
+        firstVisible.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }
+  // 「加载更多」：展开该板块超出封顶、默认隐藏的卡片（移除 beyond 类与标记，永久展开）
+  document.querySelectorAll(".more-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var sec = document.getElementById(btn.getAttribute("data-sec"));
+      if (sec) sec.querySelectorAll(".card.beyond").forEach(function (c) {
+        c.classList.remove("beyond");
+        c.removeAttribute("data-beyond");
+        c.style.display = "";
+      });
+      btn.style.display = "none";
+    });
+  });
+  var sel = document.getElementById("srcsel");
+  if (sel) sel.addEventListener("change", function () {
+    src = sel.value;
+    apply();
+  });
+  var qbox = document.getElementById("q");
+  if (qbox) qbox.addEventListener("input", function () {
+    q = qbox.value.trim().toLowerCase();
+    kw = "";                                   // 手动搜索时清除热词高亮
+    document.querySelectorAll(".chip.kw.active").forEach(function (c) { c.classList.remove("active"); });
+    apply();
+  });
+  // 点击「今日热词」：筛选包含该词的条目，再次点击取消
+  document.querySelectorAll(".chip.kw").forEach(function (chip) {
+    chip.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); chip.click(); }
+    });
+    chip.addEventListener("click", function () {
+      var k = (chip.getAttribute("data-kw") || "").toLowerCase();
+      if (!k) return;
+      if (kw === k) {
+        kw = "";
+        chip.classList.remove("active");
+      } else {
+        kw = k;
+        document.querySelectorAll(".chip.kw.active").forEach(function (c) { c.classList.remove("active"); });
+        chip.classList.add("active");
+      }
+      apply();
+    });
+  });
+  apply();
+})();
+</script>
+
+</body>
+</html>
